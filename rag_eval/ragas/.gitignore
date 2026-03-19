@@ -5,3 +5,4 @@ __pycache__/
 *.pyd
 *.egg-info/
 evals/logs/
+evals/experiments/
