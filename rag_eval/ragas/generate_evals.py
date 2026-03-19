@@ -29,11 +29,10 @@ print(f"Generated {len(dataset.samples)} testset samples")
 df = dataset.to_pandas()
 
 from pathlib import Path
-from datetime import datetime
 
 out_dir = Path("evals/datasets")
 out_dir.mkdir(parents=True, exist_ok=True)
-out_file = out_dir / f"generated_testset_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+out_file = out_dir / f"testset.csv"
 df.to_csv(out_file, index=False)
 print(f"Saved testset to: {out_file}")
 
