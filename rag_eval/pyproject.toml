@@ -10,6 +10,8 @@ requires-python = ">=3.9"
 dependencies = [
     "ragas[all]>=0.3.0",
     "openai>=1.0.0",
+    "unstructured[md]>=0.18.3",
+    "libmagic>=1.0",
 ]
 
 [project.optional-dependencies]
