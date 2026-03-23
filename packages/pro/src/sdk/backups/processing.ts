@@ -233,7 +233,7 @@ async function runBackup(
         updateOpts?.filename
       )
     } else {
-      await backups.storeAppBackupMetadata(
+      await backups.storeWorkspaceBackupMetadata(
         {
           appId: prodWorkspaceId,
           timestamp,
@@ -312,13 +312,13 @@ async function importProcessor(job: Job, opts: BackupProcessingOpts) {
       name: nameForBackup,
     })
     // get the backup ready on disk
-    const path = await backups.downloadAppBackup(backupId)
+    const path = await backups.downloadWorkspaceBackup(backupId)
     let status = BackupStatus.COMPLETE
     let promotedWorkspaceFiles: PromoteWorkspaceFilesResult | null = null
     try {
       // Import into a temporary database, but rewrite embedded workspace references
       // against the real development workspace ID.
-      await opts.importAppFn(
+      await opts.importWorkspaceFn(
         devWorkspaceId,
         dbCore.getDB(tempWorkspaceId),
         {
@@ -329,7 +329,7 @@ async function importProcessor(job: Job, opts: BackupProcessingOpts) {
           key: path,
         },
         {
-          objectStoreAppId: tempWorkspaceId,
+          objectStoreWorkspaceId: tempWorkspaceId,
         }
       )
       // Copy files before database cutover. We only add/overwrite desired keys

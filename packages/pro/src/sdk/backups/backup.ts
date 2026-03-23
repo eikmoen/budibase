@@ -22,7 +22,7 @@ import { backups } from "../../db"
 import * as features from "../features"
 import { getBackupQueue } from "./queue"
 
-async function storeAppBackupMetadata(
+async function storeWorkspaceBackupMetadata(
   metadata: WorkspaceBackupMetadata,
   opts: { filename?: string } = {}
 ) {
@@ -48,7 +48,7 @@ async function updateBackupStatus(
   contents?: WorkspaceBackupContents,
   filename?: string
 ) {
-  const backup: WorkspaceBackupMetadata = await getAppBackup(id)
+  const backup: WorkspaceBackupMetadata = await getWorkspaceBackup(id)
   // keep backup event timestamp up to date with when it completes/fails
   return await backups.storeAppBackupMetadata(
     {
@@ -67,7 +67,7 @@ async function updateRestoreStatus(
   rev: string,
   status: BackupStatus
 ) {
-  const restore: WorkspaceBackupMetadata = await getAppBackup(id)
+  const restore: WorkspaceBackupMetadata = await getWorkspaceBackup(id)
   // keep restore event timestamp up to date with when it completes/fails
   return await backups.storeAppBackupMetadata(
     {
@@ -81,15 +81,15 @@ async function updateRestoreStatus(
   )
 }
 
-async function getAppBackup(backupId: string) {
+async function getWorkspaceBackup(backupId: string) {
   return backups.getAppBackupMetadata(backupId)
 }
 
-async function updateAppBackup(backupId: string, backupName: string) {
+async function updateWorkspaceBackup(backupId: string, backupName: string) {
   return backups.updateAppBackupMetadata(backupId, backupName)
 }
 
-async function deleteAppBackup(backupId: string) {
+async function deleteWorkspaceBackup(backupId: string) {
   const metadata = await backups.getAppBackupMetadata(backupId)
   if (metadata.filename) {
     await objectStore.deleteFile(
@@ -100,12 +100,12 @@ async function deleteAppBackup(backupId: string) {
   return backups.deleteAppBackupMetadata(backupId)
 }
 
-async function deleteAppBackups(backupIds: string[]) {
+async function deleteWorkspaceBackups(backupIds: string[]) {
   const results = []
 
   for (const backupId of backupIds) {
     try {
-      await deleteAppBackup(backupId)
+      await deleteWorkspaceBackup(backupId)
       results.push({ backupId, success: true })
     } catch (error) {
       results.push({
@@ -119,7 +119,7 @@ async function deleteAppBackups(backupIds: string[]) {
   return results
 }
 
-async function fetchAppBackups(appId: string, opts?: BackupFetchOpts) {
+async function fetchWorkspaceBackups(appId: string, opts?: BackupFetchOpts) {
   return backups.fetchAppBackups(appId, opts)
 }
 
@@ -135,7 +135,7 @@ async function getBackupDownloadStream(backupId: string) {
   return { metadata, stream }
 }
 
-async function downloadAppBackup(backupId: string): Promise<string> {
+async function downloadWorkspaceBackup(backupId: string): Promise<string> {
   const { stream } = await getBackupDownloadStream(backupId)
   const path = join(objectStore.budibaseTempDir(), utils.newid())
   const writeStream = fs.createWriteStream(path)
@@ -146,7 +146,7 @@ async function downloadAppBackup(backupId: string): Promise<string> {
   })
 }
 
-async function triggerAppBackup(
+async function triggerWorkspaceBackup(
   appId: string,
   trigger: BackupTrigger,
   opts: { createdBy?: string; name?: string } = {}
@@ -154,7 +154,7 @@ async function triggerAppBackup(
   // store immediately, get rev and id as incomplete
   let backup
   try {
-    backup = await storeAppBackupMetadata({
+    backup = await storeWorkspaceBackupMetadata({
       appId,
       trigger,
       timestamp: new Date().toISOString(),
@@ -191,17 +191,17 @@ async function triggerAppBackup(
   return backup.id
 }
 
-async function triggerAppRestore(
+async function triggerWorkspaceRestore(
   appId: string,
   backupId: string,
   nameForBackup: string,
   createdBy?: string
 ): Promise<{ restoreId: string; metadata: any } | void> {
-  const metadata = await getAppBackup(backupId)
+  const metadata = await getWorkspaceBackup(backupId)
   // store immediately, get rev and id as incomplete
   let restore
   try {
-    restore = await storeAppBackupMetadata({
+    restore = await storeWorkspaceBackupMetadata({
       appId,
       timestamp: new Date().toISOString(),
       status: BackupStatus.PENDING,
@@ -272,18 +272,20 @@ async function trackBackupError(
  */
 const pkg = {
   isEnabled: features.isBackupsEnabled,
-  triggerAppRestore: features.checkBackups(triggerAppRestore),
-  triggerAppBackup: features.checkBackups(triggerAppBackup),
+  triggerWorkspaceRestore: features.checkBackups(triggerWorkspaceRestore),
+  triggerWorkspaceBackup: features.checkBackups(triggerWorkspaceBackup),
   getBackupDownloadStream: features.checkBackups(getBackupDownloadStream),
-  downloadAppBackup: features.checkBackups(downloadAppBackup),
-  fetchAppBackups: features.checkBackups(fetchAppBackups),
-  storeAppBackupMetadata: features.checkBackups(storeAppBackupMetadata),
+  downloadWorkspaceBackup: features.checkBackups(downloadWorkspaceBackup),
+  fetchWorkspaceBackups: features.checkBackups(fetchWorkspaceBackups),
+  storeWorkspaceBackupMetadata: features.checkBackups(
+    storeWorkspaceBackupMetadata
+  ),
   updateBackupStatus: features.checkBackups(updateBackupStatus),
   updateRestoreStatus: features.checkBackups(updateRestoreStatus),
-  getAppBackup: features.checkBackups(getAppBackup),
-  updateAppBackup: features.checkBackups(updateAppBackup),
-  deleteAppBackup: features.checkBackups(deleteAppBackup),
-  deleteAppBackups: features.checkBackups(deleteAppBackups),
+  getWorkspaceBackup: features.checkBackups(getWorkspaceBackup),
+  updateWorkspaceBackup: features.checkBackups(updateWorkspaceBackup),
+  deleteWorkspaceBackup: features.checkBackups(deleteWorkspaceBackup),
+  deleteWorkspaceBackups: features.checkBackups(deleteWorkspaceBackups),
   trackBackupError: features.checkBackups(trackBackupError),
 }
 

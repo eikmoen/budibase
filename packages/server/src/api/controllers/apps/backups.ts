@@ -29,10 +29,14 @@ export async function manualBackup(
   await checkAppId(ctx, appId)
   const { body } = ctx.request
   const createdBy = ctx.user?._id
-  const backupId = await backups.triggerAppBackup(appId, BackupTrigger.MANUAL, {
-    name: body.name,
-    createdBy,
-  })
+  const backupId = await backups.triggerWorkspaceBackup(
+    appId,
+    BackupTrigger.MANUAL,
+    {
+      name: body.name,
+      createdBy,
+    }
+  )
   if (!backupId) {
     ctx.throw(500, "Unable to start backup.")
   }
@@ -49,7 +53,7 @@ export async function importBackup(
   await checkAppId(ctx, appId)
   const backupId = ctx.params.backupId
   const nameForBackup = ctx.request.body.name
-  const response = await backups.triggerAppRestore(
+  const response = await backups.triggerWorkspaceRestore(
     appId,
     backupId,
     nameForBackup,
@@ -69,7 +73,7 @@ export async function deleteBackup(ctx: UserCtx) {
   const appId = ctx.params.appId
   await checkAppId(ctx, appId)
   const backupId = ctx.params.backupId
-  await backups.deleteAppBackup(backupId)
+  await backups.deleteWorkspaceBackup(backupId)
   ctx.body = {
     message: "Backup deleted successfully.",
   }
@@ -86,7 +90,7 @@ export async function deleteBackups(
     ctx.throw(400, "backupIds must be a non-empty array")
   }
 
-  const results = await backups.deleteAppBackups(backupIds)
+  const results = await backups.deleteWorkspaceBackups(backupIds)
   const successCount = results.filter(r => r.success).length
   const failureCount = results.length - successCount
 
@@ -108,7 +112,7 @@ export async function fetchBackups(ctx: UserCtx) {
       ctx.throw(400, "Provided trigger is not a valid option.")
     }
   }
-  ctx.body = await backups.fetchAppBackups(appId, {
+  ctx.body = await backups.fetchWorkspaceBackups(appId, {
     paginate: true,
     ...body,
   })
@@ -119,7 +123,7 @@ export async function updateBackup(ctx: UserCtx) {
   await checkAppId(ctx, appId)
   const backupId = ctx.params.backupId
   const body = ctx.request.body as UpdateWorkspaceBackupRequest
-  ctx.body = await backups.updateAppBackup(backupId, body.name)
+  ctx.body = await backups.updateWorkspaceBackup(backupId, body.name)
 }
 
 export async function downloadBackup(ctx: UserCtx) {

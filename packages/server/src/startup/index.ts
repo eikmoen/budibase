@@ -95,7 +95,7 @@ async function initPro() {
     backups: {
       processing: {
         exportWorkspaceFn: sdk.backups.exportApp,
-        importAppFn: sdk.backups.importApp,
+        importWorkspaceFn: sdk.backups.importApp,
         statsFn: sdk.backups.calculateBackupStats,
       },
     },
