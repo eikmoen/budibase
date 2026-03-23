@@ -34,13 +34,13 @@ type TemplateType = {
   key?: string
 }
 
-function rewriteAttachmentUrl(appId: string, attachment: RowAttachment) {
-  // URL looks like: /prod-budi-app-assets/appId/attachments/file.csv
+function rewriteAttachmentUrl(workspaceId: string, attachment: RowAttachment) {
+  // URL looks like: /prod-budi-app-assets/workspaceId/attachments/file.csv
   const urlParts = attachment.key?.split("/") || []
-  // remove the app ID
+  // remove the workspace ID
   urlParts.shift()
-  // add new app ID
-  urlParts.unshift(appId)
+  // add new workspace ID
+  urlParts.unshift(workspaceId)
   const key = urlParts.join("/")
   return {
     ...attachment,
@@ -49,7 +49,10 @@ function rewriteAttachmentUrl(appId: string, attachment: RowAttachment) {
   }
 }
 
-export async function updateAttachmentColumns(prodAppId: string, db: Database) {
+export async function updateAttachmentColumns(
+  prodWorkspaceId: string,
+  db: Database
+) {
   // iterate through attachment documents and update them
   const tables = await sdk.tables.getAllInternalTables(db)
   let updatedRows: Row[] = []
@@ -67,14 +70,14 @@ export async function updateAttachmentColumns(prodAppId: string, db: Database) {
             Array.isArray(row[column])
           ) {
             row[column] = row[column].map((attachment: RowAttachment) =>
-              rewriteAttachmentUrl(prodAppId, attachment)
+              rewriteAttachmentUrl(prodWorkspaceId, attachment)
             )
           } else if (
             (columnType === FieldType.ATTACHMENT_SINGLE ||
               columnType === FieldType.SIGNATURE_SINGLE) &&
             row[column]
           ) {
-            row[column] = rewriteAttachmentUrl(prodAppId, row[column])
+            row[column] = rewriteAttachmentUrl(prodWorkspaceId, row[column])
           }
         }
         return row
@@ -85,7 +88,7 @@ export async function updateAttachmentColumns(prodAppId: string, db: Database) {
   await db.bulkDocs(updatedRows)
 }
 
-async function updateAutomations(prodAppId: string, db: Database) {
+async function updateAutomations(prodWorkspaceId: string, db: Database) {
   const automations = (
     await db.allDocs(
       getAutomationParams(null, {
@@ -93,18 +96,18 @@ async function updateAutomations(prodAppId: string, db: Database) {
       })
     )
   ).rows.map(row => row.doc) as Automation[]
-  const devId = dbCore.getDevWorkspaceID(prodAppId)
+  const devId = dbCore.getDevWorkspaceID(prodWorkspaceId)
   let toSave: Automation[] = []
   for (let automation of automations) {
-    const oldDevAppId = automation.appId,
-      oldProdAppId = dbCore.getProdWorkspaceID(automation.appId)
+    const oldDevWorkspaceId = automation.appId,
+      oldProdWorkspaceId = dbCore.getProdWorkspaceID(automation.appId)
     if (
       automation.definition.trigger?.stepId === AutomationTriggerStepId.WEBHOOK
     ) {
       const old = automation.definition.trigger.inputs as WebhookTriggerInputs
       automation.definition.trigger.inputs = {
-        schemaUrl: old.schemaUrl.replace(oldDevAppId, devId),
-        triggerUrl: old.triggerUrl.replace(oldProdAppId, prodAppId),
+        schemaUrl: old.schemaUrl.replace(oldDevWorkspaceId, devId),
+        triggerUrl: old.triggerUrl.replace(oldProdWorkspaceId, prodWorkspaceId),
       }
     }
     automation.appId = devId
@@ -179,26 +182,29 @@ export function getListOfAppsInMulti(tmpPath: string) {
   return fs.readdirSync(tmpPath).filter(dir => dir !== GLOBAL_DB_EXPORT_FILE)
 }
 
-export interface ImportAppOpts {
+export interface ImportWorkspaceOpts {
   updateAttachmentColumns?: boolean
   importObjStoreContents?: boolean
-  objectStoreAppId?: string
+  objectStoreWorkspaceId?: string
 }
 
-export async function importApp(
-  appId: string,
+export async function importWorkspace(
+  workspaceId: string,
   db: Database,
   template: TemplateType,
-  opts: ImportAppOpts = {}
+  opts: ImportWorkspaceOpts = {}
 ) {
-  const importOpts: ImportAppOpts = {
+  const importOpts: ImportWorkspaceOpts = {
     updateAttachmentColumns: true,
     importObjStoreContents: true,
     ...opts,
   }
-  const prodAppId = dbCore.getProdWorkspaceID(appId)
-  const objectStoreWorkspaceId = importOpts.objectStoreAppId ?? appId
-  const objectStoreProdAppId = dbCore.getProdWorkspaceID(objectStoreWorkspaceId)
+  const prodWorkspaceId = dbCore.getProdWorkspaceID(workspaceId)
+  const objectStoreWorkspaceId =
+    importOpts.objectStoreWorkspaceId ?? workspaceId
+  const objectStoreProdWorkspaceId = dbCore.getProdWorkspaceID(
+    objectStoreWorkspaceId
+  )
   let dbStream: fs.ReadStream
   const isTar = template.file && template?.file?.type?.endsWith("gzip")
   const isDirectory =
@@ -216,12 +222,12 @@ export async function importApp(
     }
     const isPlugin = !!contents.find(name => name === "plugin.min.js")
     if (isPlugin) {
-      throw new Error("Supplied file is a plugin - cannot import as app.")
+      throw new Error("Supplied file is a plugin - cannot import as workspace.")
     }
     const isInvalid = !contents.find(name => name === DB_EXPORT_FILE)
     if (isInvalid) {
       throw new Error(
-        "App export does not appear to be valid - no DB file found."
+        "Workspace export does not appear to be valid - no DB file found."
       )
     }
     // have to handle object import
@@ -234,7 +240,7 @@ export async function importApp(
         if (excludedFiles.includes(filename)) {
           continue
         }
-        filename = join(objectStoreProdAppId, filename)
+        filename = join(objectStoreProdWorkspaceId, filename)
         if ((await fsp.lstat(path)).isDirectory()) {
           promises.push(
             objectStore.uploadDirectory(
@@ -260,13 +266,16 @@ export async function importApp(
       await utils.parallelForeach(
         objectStore.listAllObjects(
           objectStore.ObjectStoreBuckets.WORKSPACES,
-          objectStoreProdAppId
+          objectStoreProdWorkspaceId
         ),
         async file => {
           if (
             file.Key &&
             !uploadedFiles.includes(
-              file.Key.replace(new RegExp(`^${objectStoreProdAppId}/`), "")
+              file.Key.replace(
+                new RegExp(`^${objectStoreProdWorkspaceId}/`),
+                ""
+              )
             )
           ) {
             filesToDelete.push(file.Key)
@@ -291,9 +300,9 @@ export async function importApp(
     throw "Error loading database dump from template."
   }
   if (importOpts.updateAttachmentColumns) {
-    await updateAttachmentColumns(prodAppId, db)
+    await updateAttachmentColumns(prodWorkspaceId, db)
   }
-  await updateAutomations(prodAppId, db)
+  await updateAutomations(prodWorkspaceId, db)
   // clear up afterward
   if (tmpPath) {
     await fsp.rm(tmpPath, { recursive: true, force: true })
