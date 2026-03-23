@@ -34,7 +34,7 @@ type ImportAppFn = (
 type StatsFn = (devAppId: string) => Promise<WorkspaceBackupContents>
 
 export interface BackupProcessingOpts {
-  exportAppFn: ExportAppFn
+  exportWorkspaceFn: ExportAppFn
   importAppFn: ImportAppFn
   statsFn: StatsFn
 }

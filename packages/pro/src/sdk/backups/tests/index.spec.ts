@@ -169,7 +169,7 @@ describe("backups", () => {
     mocks.licenses.useBackups()
     await backups.init({
       processing: {
-        exportAppFn,
+        exportWorkspaceFn: exportAppFn,
         importAppFn,
         statsFn,
       },
