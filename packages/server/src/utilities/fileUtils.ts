@@ -43,7 +43,7 @@ export async function uploadUrl(url: string): Promise<Upload | undefined> {
     return {
       size: fileStream.bytesWritten,
       name: processedFileName,
-      url: await objectStore.getAppFileUrl(s3Key),
+      url: await objectStore.getWorkspaceFileUrl(s3Key),
       extension,
       key: response.Key!,
     }
@@ -78,7 +78,7 @@ export async function uploadFile(file: {
   return {
     size: fs.readFileSync(destination).byteLength,
     name: processedFileName,
-    url: await objectStore.getAppFileUrl(s3Key),
+    url: await objectStore.getWorkspaceFileUrl(s3Key),
     extension: file.extension,
     key: response.Key!,
   }

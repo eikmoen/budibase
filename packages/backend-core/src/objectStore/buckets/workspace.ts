@@ -35,7 +35,7 @@ export async function getClientCacheKey(version: string) {
   return qs.encode(qsParams)
 }
 
-export async function getAppFileUrl(s3Key: string) {
+export async function getWorkspaceFileUrl(s3Key: string) {
   if (env.CLOUDFRONT_CDN) {
     return cloudfront.getPresignedUrl(s3Key)
   } else {
@@ -55,7 +55,7 @@ export async function enrichPWAImages(
       images.map(async image => {
         return {
           ...image,
-          src: await getAppFileUrl(image.src),
+          src: await getWorkspaceFileUrl(image.src),
           type: image.type || "image/png",
         }
       })

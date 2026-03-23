@@ -207,7 +207,7 @@ export const uploadFile = async function (
       return {
         size: file.size,
         name: fileName,
-        url: await objectStore.getAppFileUrl(s3Key),
+        url: await objectStore.getWorkspaceFileUrl(s3Key),
         extension,
         key: response.Key!,
       }

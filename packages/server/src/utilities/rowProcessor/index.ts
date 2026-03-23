@@ -377,7 +377,9 @@ export async function coreOutputProcessing(
         }
         const process = async (attachment: RowAttachment) => {
           if (attachment.key) {
-            attachment.url = await objectStore.getAppFileUrl(attachment.key)
+            attachment.url = await objectStore.getWorkspaceFileUrl(
+              attachment.key
+            )
           }
           return attachment
         }
