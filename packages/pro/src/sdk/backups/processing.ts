@@ -55,7 +55,7 @@ const DELETE_BATCH_SIZE = 1000
 async function deleteAppFiles(fileKeys: string[]) {
   for (let i = 0; i < fileKeys.length; i += DELETE_BATCH_SIZE) {
     await objectStore.deleteFiles(
-      objectStore.ObjectStoreBuckets.APPS,
+      objectStore.ObjectStoreBuckets.WORKSPACES,
       fileKeys.slice(i, i + DELETE_BATCH_SIZE)
     )
   }
@@ -64,7 +64,7 @@ async function deleteAppFiles(fileKeys: string[]) {
 async function listAppFiles(prefix: string) {
   const fileKeys: string[] = []
   for await (const file of objectStore.listAllObjects(
-    objectStore.ObjectStoreBuckets.APPS,
+    objectStore.ObjectStoreBuckets.WORKSPACES,
     prefix
   )) {
     if (file.Key) {
@@ -95,11 +95,11 @@ interface PromoteWorkspaceFilesResult {
 
 async function copyAppFile(sourceKey: string, targetKey: string) {
   const { stream } = await objectStore.getReadStream(
-    objectStore.ObjectStoreBuckets.APPS,
+    objectStore.ObjectStoreBuckets.WORKSPACES,
     sourceKey
   )
   await objectStore.streamUpload({
-    bucket: objectStore.ObjectStoreBuckets.APPS,
+    bucket: objectStore.ObjectStoreBuckets.WORKSPACES,
     filename: targetKey,
     stream,
   })
@@ -147,7 +147,7 @@ async function promoteWorkspaceFiles(
         : sourceKey
       const targetKey = `${targetPrefix}${relativePath}`
       const alreadyExists = await objectStore.objectExists(
-        objectStore.ObjectStoreBuckets.APPS,
+        objectStore.ObjectStoreBuckets.WORKSPACES,
         targetKey
       )
       if (alreadyExists) {

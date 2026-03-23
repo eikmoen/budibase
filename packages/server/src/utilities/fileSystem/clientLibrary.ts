@@ -47,7 +47,10 @@ export async function backupClientLibrary(appId: string) {
   appId = sdk.applications.getProdAppID(appId)
   // First, remove any existing backup folder
   try {
-    await objectStore.deleteFolder(ObjectStoreBuckets.APPS, `${appId}/.bak`)
+    await objectStore.deleteFolder(
+      ObjectStoreBuckets.WORKSPACES,
+      `${appId}/.bak`
+    )
   } catch (error) {
     // Ignore errors if backup doesn't exist
   }
@@ -58,13 +61,13 @@ export async function backupClientLibrary(appId: string) {
     }
 
     const tmpPath = await objectStore.retrieveToTmp(
-      ObjectStoreBuckets.APPS,
+      ObjectStoreBuckets.WORKSPACES,
       fileKey
     )
 
     const backupKey = fileKey.replace(appId, `${appId}/.bak`)
     await objectStore.upload({
-      bucket: ObjectStoreBuckets.APPS,
+      bucket: ObjectStoreBuckets.WORKSPACES,
       filename: backupKey,
       path: tmpPath,
     })
@@ -124,7 +127,7 @@ export async function updateClientLibrary(appId: string) {
   const manifestSrc = fs.promises.readFile(manifest, "utf8")
   await Promise.all([
     objectStore.streamUploadMany({
-      bucket: ObjectStoreBuckets.APPS,
+      bucket: ObjectStoreBuckets.WORKSPACES,
       files,
     }),
     manifestSrc,
@@ -133,7 +136,10 @@ export async function updateClientLibrary(appId: string) {
   const uploadedFiles = files.map(file => file.filename)
   const filesToDelete: string[] = []
   await utils.parallelForeach(
-    objectStore.listAllObjects(objectStore.ObjectStoreBuckets.APPS, appId),
+    objectStore.listAllObjects(
+      objectStore.ObjectStoreBuckets.WORKSPACES,
+      appId
+    ),
     async file => {
       const key = file.Key
       if (!key) {
@@ -151,7 +157,7 @@ export async function updateClientLibrary(appId: string) {
 
   if (filesToDelete.length) {
     await objectStore.deleteFiles(
-      objectStore.ObjectStoreBuckets.APPS,
+      objectStore.ObjectStoreBuckets.WORKSPACES,
       filesToDelete
     )
   }
@@ -178,7 +184,7 @@ export async function revertClientLibrary(appId: string) {
 
     // Download the backup file to temp
     const tmpPath = await objectStore.retrieveToTmp(
-      ObjectStoreBuckets.APPS,
+      ObjectStoreBuckets.WORKSPACES,
       filePath
     )
 
@@ -192,7 +198,7 @@ export async function revertClientLibrary(appId: string) {
     }
 
     await objectStore.upload({
-      bucket: ObjectStoreBuckets.APPS,
+      bucket: ObjectStoreBuckets.WORKSPACES,
       filename: restoreKey,
       path: tmpPath,
     })
@@ -206,7 +212,7 @@ export async function revertClientLibrary(appId: string) {
         !filePath.endsWith(".bak") &&
         !restoredFiles.has(filePath)
       ) {
-        await objectStore.deleteFile(ObjectStoreBuckets.APPS, filePath)
+        await objectStore.deleteFile(ObjectStoreBuckets.WORKSPACES, filePath)
       }
     })
   }
@@ -227,7 +233,7 @@ export async function revertClientLibrary(appId: string) {
 
       if (restoreKey.endsWith("manifest.json")) {
         const tmpPath = await objectStore.retrieveToTmp(
-          ObjectStoreBuckets.APPS,
+          ObjectStoreBuckets.WORKSPACES,
           filePath
         )
         manifestContent = await fs.promises.readFile(tmpPath, "utf8")
@@ -235,12 +241,12 @@ export async function revertClientLibrary(appId: string) {
 
       // For all other files, use streaming
       const { stream } = await objectStore.getReadStream(
-        ObjectStoreBuckets.APPS,
+        ObjectStoreBuckets.WORKSPACES,
         filePath
       )
 
       await objectStore.streamUpload({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: restoreKey,
         stream,
       })
@@ -263,7 +269,7 @@ const forEachObject = (
   task: (fileKey: string) => Promise<void>
 ) =>
   utils.parallelForeach(
-    objectStore.listAllObjects(ObjectStoreBuckets.APPS, path),
+    objectStore.listAllObjects(ObjectStoreBuckets.WORKSPACES, path),
     async file => {
       if (!file.Key) {
         throw new Error("file.Key must be defined")

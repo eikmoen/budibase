@@ -493,7 +493,7 @@ export async function downloadAttachment(
     ctx.attachment(attachment.name)
     if (attachment.key) {
       const { stream } = await objectStore.getReadStream(
-        objectStore.ObjectStoreBuckets.APPS,
+        objectStore.ObjectStoreBuckets.WORKSPACES,
         attachment.key
       )
       ctx.body = stream
@@ -508,7 +508,7 @@ export async function downloadAttachment(
         continue
       }
       const { stream: attachmentStream } = await objectStore.getReadStream(
-        objectStore.ObjectStoreBuckets.APPS,
+        objectStore.ObjectStoreBuckets.WORKSPACES,
         attachment.key
       )
       archive.append(attachmentStream, { name: attachment.name })

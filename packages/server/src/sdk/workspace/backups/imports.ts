@@ -237,12 +237,16 @@ export async function importApp(
         filename = join(objectStoreProdAppId, filename)
         if ((await fsp.lstat(path)).isDirectory()) {
           promises.push(
-            objectStore.uploadDirectory(ObjectStoreBuckets.APPS, path, filename)
+            objectStore.uploadDirectory(
+              ObjectStoreBuckets.WORKSPACES,
+              path,
+              filename
+            )
           )
         } else {
           promises.push(
             objectStore.upload({
-              bucket: ObjectStoreBuckets.APPS,
+              bucket: ObjectStoreBuckets.WORKSPACES,
               path,
               filename,
             })
@@ -255,7 +259,7 @@ export async function importApp(
       const filesToDelete: string[] = []
       await utils.parallelForeach(
         objectStore.listAllObjects(
-          objectStore.ObjectStoreBuckets.APPS,
+          objectStore.ObjectStoreBuckets.WORKSPACES,
           objectStoreProdAppId
         ),
         async file => {
@@ -273,7 +277,7 @@ export async function importApp(
 
       if (filesToDelete.length) {
         await objectStore.deleteFiles(
-          objectStore.ObjectStoreBuckets.APPS,
+          objectStore.ObjectStoreBuckets.WORKSPACES,
           filesToDelete
         )
       }

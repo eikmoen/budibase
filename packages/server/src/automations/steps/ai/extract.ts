@@ -154,7 +154,7 @@ async function processAttachmentFile(
   attachment: any,
   llm: LLMResponse
 ): Promise<ExtractInput> {
-  const bucket = objectStore.ObjectStoreBuckets.APPS
+  const bucket = objectStore.ObjectStoreBuckets.WORKSPACES
   const { stream } = await objectStore.getReadStream(bucket, attachment.key!)
   const contentType = attachment.extension
 

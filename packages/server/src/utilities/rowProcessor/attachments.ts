@@ -38,7 +38,7 @@ export class AttachmentCleanup {
       }
     }
 
-    await objectStore.deleteFiles(ObjectStoreBuckets.APPS, files)
+    await objectStore.deleteFiles(ObjectStoreBuckets.WORKSPACES, files)
   }
 
   private static async excludeFilesUsedInProd(

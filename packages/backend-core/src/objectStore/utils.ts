@@ -23,7 +23,7 @@ import * as objectStore from "./objectStore"
 // can't be an enum - only numbers can be used for computed types
 export const ObjectStoreBuckets = {
   BACKUPS: env.BACKUPS_BUCKET_NAME,
-  APPS: env.APPS_BUCKET_NAME,
+  WORKSPACES: env.WORKSPACES_BUCKET_NAME,
   TEMPLATES: env.TEMPLATES_BUCKET_NAME,
   GLOBAL: env.GLOBAL_BUCKET_NAME,
   PLUGINS: env.PLUGIN_BUCKET_NAME,

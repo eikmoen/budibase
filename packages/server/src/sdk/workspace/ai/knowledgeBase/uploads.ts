@@ -36,7 +36,7 @@ export const uploadKnowledgeBaseFile = async (
 
   try {
     await objectStore.upload({
-      bucket: ObjectStoreBuckets.APPS,
+      bucket: ObjectStoreBuckets.WORKSPACES,
       filename: objectStoreKey,
       body: input.buffer,
       type: input.mimetype,
@@ -71,7 +71,7 @@ export const uploadKnowledgeBaseFile = async (
     }
   } catch (error: any) {
     await objectStore
-      .deleteFile(ObjectStoreBuckets.APPS, objectStoreKey)
+      .deleteFile(ObjectStoreBuckets.WORKSPACES, objectStoreKey)
       .catch(() => {
         // Ignore, it might not exist
       })

@@ -131,7 +131,10 @@ export const removeKnowledgeBaseFile = async (
 
   if (file.objectStoreKey) {
     try {
-      await objectStore.deleteFile(ObjectStoreBuckets.APPS, file.objectStoreKey)
+      await objectStore.deleteFile(
+        ObjectStoreBuckets.WORKSPACES,
+        file.objectStoreKey
+      )
     } catch (error) {
       console.log(
         "Failed to delete knowledge base file from object store",

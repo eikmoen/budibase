@@ -153,7 +153,7 @@ describe("test the create row action", () => {
     const client = objectStore.ObjectStore()
 
     const objectData = await client.headObject({
-      Bucket: objectStore.ObjectStoreBuckets.APPS,
+      Bucket: objectStore.ObjectStoreBuckets.WORKSPACES,
       Key: s3Key,
     })
 
@@ -225,7 +225,7 @@ describe("test the create row action", () => {
     const client = objectStore.ObjectStore()
 
     const objectData = await client.headObject({
-      Bucket: objectStore.ObjectStoreBuckets.APPS,
+      Bucket: objectStore.ObjectStoreBuckets.WORKSPACES,
       Key: s3Key,
     })
 

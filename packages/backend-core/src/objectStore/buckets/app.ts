@@ -39,7 +39,7 @@ export async function getAppFileUrl(s3Key: string) {
   if (env.CLOUDFRONT_CDN) {
     return cloudfront.getPresignedUrl(s3Key)
   } else {
-    return await objectStore.getPresignedUrl(env.APPS_BUCKET_NAME, s3Key)
+    return await objectStore.getPresignedUrl(env.WORKSPACES_BUCKET_NAME, s3Key)
   }
 }
 

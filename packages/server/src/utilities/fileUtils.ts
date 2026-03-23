@@ -34,7 +34,7 @@ export async function uploadUrl(url: string): Promise<Upload | undefined> {
     const s3Key = `${context.getProdWorkspaceId()}/attachments/${processedFileName}`
 
     const response = await objectStore.upload({
-      bucket: ObjectStoreBuckets.APPS,
+      bucket: ObjectStoreBuckets.WORKSPACES,
       filename: s3Key,
       path: destination,
       type: "image/jpeg",
@@ -69,7 +69,7 @@ export async function uploadFile(file: {
   const s3Key = `${context.getProdWorkspaceId()}/attachments/${processedFileName}`
 
   const response = await objectStore.upload({
-    bucket: ObjectStoreBuckets.APPS,
+    bucket: ObjectStoreBuckets.WORKSPACES,
     filename: s3Key,
     path: destination,
     type: "text/plain",

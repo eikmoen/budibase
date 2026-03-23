@@ -245,7 +245,7 @@ async function generateAttachmentRow(attachment: AutomationAttachment) {
     const s3Key = `${prodAppId}/attachments/${fileName}`
 
     await objectStore.streamUpload({
-      bucket: objectStore.ObjectStoreBuckets.APPS,
+      bucket: objectStore.ObjectStoreBuckets.WORKSPACES,
       stream: content,
       filename: s3Key,
     })
@@ -256,7 +256,7 @@ async function generateAttachmentRow(attachment: AutomationAttachment) {
   async function getSize(s3Key: string) {
     return (
       await objectStore.getObjectMetadata(
-        objectStore.ObjectStoreBuckets.APPS,
+        objectStore.ObjectStoreBuckets.WORKSPACES,
         s3Key
       )
     ).ContentLength

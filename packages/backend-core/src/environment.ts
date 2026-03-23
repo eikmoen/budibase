@@ -40,7 +40,7 @@ function parseIntSafe(number?: string) {
 
 const DefaultBucketName = {
   BACKUPS: "backups",
-  APPS: "prod-budi-app-assets",
+  WORKSPACES: "prod-budi-app-assets",
   TEMPLATES: "templates",
   GLOBAL: "global",
   PLUGINS: "plugins",
@@ -205,7 +205,8 @@ const environment = {
   CLOUDFRONT_PUBLIC_KEY_ID: process.env.CLOUDFRONT_PUBLIC_KEY_ID,
   BACKUPS_BUCKET_NAME:
     process.env.BACKUPS_BUCKET_NAME || DefaultBucketName.BACKUPS,
-  APPS_BUCKET_NAME: process.env.APPS_BUCKET_NAME || DefaultBucketName.APPS,
+  WORKSPACES_BUCKET_NAME:
+    process.env.APPS_BUCKET_NAME || DefaultBucketName.WORKSPACES,
   TEMPLATES_BUCKET_NAME:
     process.env.TEMPLATES_BUCKET_NAME || DefaultBucketName.TEMPLATES,
   GLOBAL_BUCKET_NAME:

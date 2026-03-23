@@ -198,7 +198,7 @@ export const uploadFile = async function (
       const s3Key = `${context.getProdWorkspaceId()}/attachments/${processedFileName}`
 
       const response = await objectStore.upload({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: s3Key,
         path: filePath,
         type: rawMimeType,
@@ -273,7 +273,7 @@ export async function processPWAZip(ctx: UserCtx) {
 
       try {
         const result = await objectStore.upload({
-          bucket: ObjectStoreBuckets.APPS,
+          bucket: ObjectStoreBuckets.WORKSPACES,
           filename: key,
           path: resolvedSrc,
           type: mimeType,
@@ -535,7 +535,7 @@ export const serveClientLibrary = async function (
   const serveLocally = await shouldServeLocally()
   if (!serveLocally) {
     const { stream } = await objectStore.getReadStream(
-      ObjectStoreBuckets.APPS,
+      ObjectStoreBuckets.WORKSPACES,
       objectStore.clientLibraryPath(workspaceId!)
     )
     ctx.body = stream
@@ -562,7 +562,7 @@ export const serve3rdPartyFile = async function (ctx: Ctx) {
   const serveLocally = await shouldServeLocally()
   if (!serveLocally) {
     const { stream, contentType } = await objectStore.getReadStream(
-      ObjectStoreBuckets.APPS,
+      ObjectStoreBuckets.WORKSPACES,
       objectStore.client3rdPartyLibrary(workspaceId, file)
     )
 

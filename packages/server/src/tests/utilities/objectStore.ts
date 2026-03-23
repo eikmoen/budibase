@@ -4,7 +4,7 @@ export async function getAppObjectStorageEtags(appId: string) {
   appId = db.getProdWorkspaceID(appId)
 
   const objects = await objectStore.getAllFiles(
-    objectStore.ObjectStoreBuckets.APPS,
+    objectStore.ObjectStoreBuckets.WORKSPACES,
     appId
   )
 

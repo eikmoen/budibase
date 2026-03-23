@@ -126,7 +126,7 @@ export async function enqueueRagFileIngestion(job: RagIngestionJob) {
 
 const loadFileBuffer = async (objectKey: string): Promise<Buffer> => {
   const { stream } = await objectStore.getReadStream(
-    ObjectStoreBuckets.APPS,
+    ObjectStoreBuckets.WORKSPACES,
     objectKey
   )
 

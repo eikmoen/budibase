@@ -338,7 +338,7 @@ async function copyAttachmentToWorkspace(
       (async () => {
         try {
           const alreadyExists = await objectStore.objectExists(
-            ObjectStoreBuckets.APPS,
+            ObjectStoreBuckets.WORKSPACES,
             destinationKey
           )
           if (alreadyExists) {
@@ -356,11 +356,11 @@ async function copyAttachmentToWorkspace(
         }
         try {
           const { stream, contentType } = await objectStore.getReadStream(
-            ObjectStoreBuckets.APPS,
+            ObjectStoreBuckets.WORKSPACES,
             key
           )
           await objectStore.streamUpload({
-            bucket: ObjectStoreBuckets.APPS,
+            bucket: ObjectStoreBuckets.WORKSPACES,
             stream,
             filename: destinationKey,
             type: contentType,

@@ -79,28 +79,28 @@ describe("clientLibrary", () => {
       await backupClientLibrary(testAppId)
 
       expect(mockedObjectStore.deleteFolder).toHaveBeenCalledWith(
-        ObjectStoreBuckets.APPS,
+        ObjectStoreBuckets.WORKSPACES,
         "app_123/.bak"
       )
 
       expect(mockedObjectStore.upload).toHaveBeenCalledTimes(4)
       expect(mockedObjectStore.upload).toHaveBeenCalledWith({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: "app_123/.bak/manifest.json",
         path: "/tmp/file",
       })
       expect(mockedObjectStore.upload).toHaveBeenCalledWith({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: "app_123/.bak/budibase-client.js",
         path: "/tmp/file",
       })
       expect(mockedObjectStore.upload).toHaveBeenCalledWith({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: "app_123/.bak/_dependencies/some-lib.js",
         path: "/tmp/file",
       })
       expect(mockedObjectStore.upload).toHaveBeenCalledWith({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: "app_123/.bak/custom-file.json",
         path: "/tmp/file",
       })
@@ -119,7 +119,7 @@ describe("clientLibrary", () => {
 
       expect(mockedObjectStore.upload).toHaveBeenCalledTimes(1)
       expect(mockedObjectStore.upload).toHaveBeenCalledWith({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: "app_123/.bak/manifest.json",
         path: "/tmp/file",
       })
@@ -132,7 +132,7 @@ describe("clientLibrary", () => {
       await backupClientLibrary(testAppIdDev)
 
       expect(mockedObjectStore.listAllObjects).toHaveBeenCalledWith(
-        ObjectStoreBuckets.APPS,
+        ObjectStoreBuckets.WORKSPACES,
         testAppId // should be converted to prod ID
       )
     })
@@ -179,7 +179,7 @@ describe("clientLibrary", () => {
 
       expect(mockedObjectStore.streamUploadMany).toHaveBeenCalledTimes(1)
       expect(mockedObjectStore.streamUploadMany).toHaveBeenCalledWith({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         files: [
           {
             filename: "app_123/manifest.json",
@@ -229,7 +229,7 @@ describe("clientLibrary", () => {
 
       expect(mockedObjectStore.deleteFiles).toHaveBeenCalledTimes(1)
       expect(mockedObjectStore.deleteFiles).toHaveBeenCalledWith(
-        ObjectStoreBuckets.APPS,
+        ObjectStoreBuckets.WORKSPACES,
         ["app_123/chunks/old.js"]
       )
     })
@@ -267,7 +267,7 @@ describe("clientLibrary", () => {
       ;["manifest.json", "budibase-client.js", "manifest.json"].forEach(
         fileName => {
           expect(mockedObjectStore.upload).toHaveBeenCalledWith({
-            bucket: ObjectStoreBuckets.APPS,
+            bucket: ObjectStoreBuckets.WORKSPACES,
             filename: `app_123/${fileName}`,
             path: "/tmp/file",
           })
@@ -276,7 +276,7 @@ describe("clientLibrary", () => {
 
       expect(mockedObjectStore.deleteFile).toHaveBeenCalledTimes(1)
       expect(mockedObjectStore.deleteFile).toHaveBeenCalledWith(
-        ObjectStoreBuckets.APPS,
+        ObjectStoreBuckets.WORKSPACES,
         "app_123/extra-file.js"
       )
 
@@ -306,12 +306,12 @@ describe("clientLibrary", () => {
 
       expect(mockedObjectStore.streamUpload).toHaveBeenCalledTimes(2)
       expect(mockedObjectStore.streamUpload).toHaveBeenCalledWith({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: "app_123/budibase-client.js",
         stream: "stream1",
       })
       expect(mockedObjectStore.streamUpload).toHaveBeenCalledWith({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: "app_123/manifest.json",
         stream: "stream2",
       })
@@ -355,7 +355,7 @@ describe("clientLibrary", () => {
       await revertClientLibrary(testAppIdDev)
 
       expect(mockedObjectStore.listAllObjects).toHaveBeenCalledWith(
-        ObjectStoreBuckets.APPS,
+        ObjectStoreBuckets.WORKSPACES,
         "app_123/.bak" // should use prod ID
       )
     })

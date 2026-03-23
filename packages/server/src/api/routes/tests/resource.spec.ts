@@ -906,7 +906,7 @@ describe("/api/resources/usage", () => {
 
       const attachmentKey = `${sourceProdId}/attachments/${fileName}`
       await objectStore.upload({
-        bucket: ObjectStoreBuckets.APPS,
+        bucket: ObjectStoreBuckets.WORKSPACES,
         filename: attachmentKey,
         path: tmpFile,
         type: "text/plain",
@@ -960,11 +960,14 @@ describe("/api/resources/usage", () => {
       )
 
       expect(
-        await objectStore.objectExists(ObjectStoreBuckets.APPS, attachmentKey)
+        await objectStore.objectExists(
+          ObjectStoreBuckets.WORKSPACES,
+          attachmentKey
+        )
       ).toBe(true)
       expect(
         await objectStore.objectExists(
-          ObjectStoreBuckets.APPS,
+          ObjectStoreBuckets.WORKSPACES,
           `${destinationProdId}/attachments/${fileName}`
         )
       ).toBe(true)

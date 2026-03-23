@@ -7,7 +7,7 @@ import {
 } from "../../../constants"
 import { AttachmentCleanup } from "../attachments"
 
-const BUCKET = ObjectStoreBuckets.APPS
+const BUCKET = ObjectStoreBuckets.WORKSPACES
 const FILE_NAME = "file/thing.jpg"
 const DEV_WORKSPACEID = "abc_dev_123"
 const PROD_WORKSPACEID = "abc_123"

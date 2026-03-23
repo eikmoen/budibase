@@ -28,7 +28,7 @@ export const uploadAppFiles = async (appId: string) => {
  * @return once promise completes the app resources will be removed from object store.
  */
 export const deleteAppFiles = async (appId: string) => {
-  await objectStore.deleteFolder(ObjectStoreBuckets.APPS, `${appId}/`)
+  await objectStore.deleteFolder(ObjectStoreBuckets.WORKSPACES, `${appId}/`)
 }
 
 /**
@@ -64,7 +64,7 @@ export const getComponentLibraryManifest = async (library: string) => {
   try {
     // Try to load the manifest from the new file location
     path = join(appId, filename)
-    resp = await objectStore.retrieve(ObjectStoreBuckets.APPS, path)
+    resp = await objectStore.retrieve(ObjectStoreBuckets.WORKSPACES, path)
   } catch (error) {
     console.error(
       `component-manifest-objectstore=failed appId=${appId} path=${path}`,
@@ -72,7 +72,7 @@ export const getComponentLibraryManifest = async (library: string) => {
     )
     // Fallback to loading it from the old location for old apps
     path = join(appId, "node_modules", library, "package", filename)
-    resp = await objectStore.retrieve(ObjectStoreBuckets.APPS, path)
+    resp = await objectStore.retrieve(ObjectStoreBuckets.WORKSPACES, path)
   }
   if (typeof resp !== "string") {
     resp = resp.toString()

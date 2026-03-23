@@ -10,7 +10,7 @@ import { basicTableWithAttachmentField } from "../../../tests/utilities/structur
 import TestConfiguration from "../../../tests/utilities/TestConfiguration"
 import { createAutomationBuilder } from "../utilities/AutomationTestBuilder"
 async function uploadTestFile(filename: string, content?: string) {
-  let bucket = objectStore.ObjectStoreBuckets.APPS
+  let bucket = objectStore.ObjectStoreBuckets.WORKSPACES
   await objectStore.upload({
     bucket,
     filename,

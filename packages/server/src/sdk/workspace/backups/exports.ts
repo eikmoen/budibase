@@ -120,7 +120,7 @@ export async function exportApp(appId: string, config?: ExportOpts) {
     }
 
     const tmpPath = await objectStore.retrieveDirectory(
-      ObjectStoreBuckets.APPS,
+      ObjectStoreBuckets.WORKSPACES,
       appPath,
       toExclude
     )
