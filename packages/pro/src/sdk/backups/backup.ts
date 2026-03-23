@@ -26,7 +26,7 @@ async function storeWorkspaceBackupMetadata(
   metadata: WorkspaceBackupMetadata,
   opts: { filename?: string } = {}
 ) {
-  return backups.storeAppBackupMetadata(metadata, opts)
+  return backups.storeWorkspaceBackupMetadata(metadata, opts)
 }
 
 function getTimestamps(status: BackupStatus) {
@@ -50,7 +50,7 @@ async function updateBackupStatus(
 ) {
   const backup: WorkspaceBackupMetadata = await getWorkspaceBackup(id)
   // keep backup event timestamp up to date with when it completes/fails
-  return await backups.storeAppBackupMetadata(
+  return await backups.storeWorkspaceBackupMetadata(
     {
       ...backup,
       ...getTimestamps(status),
@@ -69,7 +69,7 @@ async function updateRestoreStatus(
 ) {
   const restore: WorkspaceBackupMetadata = await getWorkspaceBackup(id)
   // keep restore event timestamp up to date with when it completes/fails
-  return await backups.storeAppBackupMetadata(
+  return await backups.storeWorkspaceBackupMetadata(
     {
       ...restore,
       ...getTimestamps(status),
@@ -82,22 +82,22 @@ async function updateRestoreStatus(
 }
 
 async function getWorkspaceBackup(backupId: string) {
-  return backups.getAppBackupMetadata(backupId)
+  return backups.getWorkspaceBackupMetadata(backupId)
 }
 
 async function updateWorkspaceBackup(backupId: string, backupName: string) {
-  return backups.updateAppBackupMetadata(backupId, backupName)
+  return backups.updateWorkspaceBackupMetadata(backupId, backupName)
 }
 
 async function deleteWorkspaceBackup(backupId: string) {
-  const metadata = await backups.getAppBackupMetadata(backupId)
+  const metadata = await backups.getWorkspaceBackupMetadata(backupId)
   if (metadata.filename) {
     await objectStore.deleteFile(
       objectStore.ObjectStoreBuckets.BACKUPS,
       metadata.filename
     )
   }
-  return backups.deleteAppBackupMetadata(backupId)
+  return backups.deleteWorkspaceBackupMetadata(backupId)
 }
 
 async function deleteWorkspaceBackups(backupIds: string[]) {
@@ -119,12 +119,15 @@ async function deleteWorkspaceBackups(backupIds: string[]) {
   return results
 }
 
-async function fetchWorkspaceBackups(appId: string, opts?: BackupFetchOpts) {
-  return backups.fetchAppBackups(appId, opts)
+async function fetchWorkspaceBackups(
+  workspaceId: string,
+  opts?: BackupFetchOpts
+) {
+  return backups.fetchWorkspaceBackups(workspaceId, opts)
 }
 
 async function getBackupDownloadStream(backupId: string) {
-  const metadata = await backups.getAppBackupMetadata(backupId)
+  const metadata = await backups.getWorkspaceBackupMetadata(backupId)
   if (!metadata.filename) {
     throw new Error("Backup incomplete - cannot download.")
   }
@@ -147,7 +150,7 @@ async function downloadWorkspaceBackup(backupId: string): Promise<string> {
 }
 
 async function triggerWorkspaceBackup(
-  appId: string,
+  workspaceId: string,
   trigger: BackupTrigger,
   opts: { createdBy?: string; name?: string } = {}
 ): Promise<string | undefined> {
@@ -155,7 +158,7 @@ async function triggerWorkspaceBackup(
   let backup
   try {
     backup = await storeWorkspaceBackupMetadata({
-      appId,
+      appId: workspaceId,
       trigger,
       timestamp: new Date().toISOString(),
       status: BackupStatus.PENDING,
@@ -175,14 +178,14 @@ async function triggerWorkspaceBackup(
   await getBackupQueue().add({
     docId: backup.id,
     docRev: backup.rev,
-    workspaceId: appId,
+    workspaceId: workspaceId,
     export: {
       trigger,
       ...opts,
     },
   })
-  await events.backup.appBackupTriggered(
-    appId,
+  await events.backup.workspaceBackupTriggered(
+    workspaceId,
     backup.id,
     BackupType.BACKUP,
     trigger,
@@ -192,7 +195,7 @@ async function triggerWorkspaceBackup(
 }
 
 async function triggerWorkspaceRestore(
-  appId: string,
+  workspaceId: string,
   backupId: string,
   nameForBackup: string,
   createdBy?: string
@@ -202,7 +205,7 @@ async function triggerWorkspaceRestore(
   let restore
   try {
     restore = await storeWorkspaceBackupMetadata({
-      appId,
+      appId: workspaceId,
       timestamp: new Date().toISOString(),
       status: BackupStatus.PENDING,
       type: BackupType.RESTORE,
@@ -218,7 +221,7 @@ async function triggerWorkspaceRestore(
     }
   }
   await getBackupQueue().add({
-    workspaceId: appId,
+    workspaceId: workspaceId,
     docId: restore.id,
     docRev: restore.rev,
     import: {
@@ -231,12 +234,12 @@ async function triggerWorkspaceRestore(
 }
 
 async function trackBackupError(
-  appId: string,
+  workspaceId: string,
   backupId: string,
   error: string
 ) {
-  const prodAppId = db.getProdWorkspaceID(appId)
-  await context.doInWorkspaceContext(prodAppId, async () => {
+  const prodWorkspaceId = db.getProdWorkspaceID(workspaceId)
+  await context.doInWorkspaceContext(prodWorkspaceId, async () => {
     const database = context.getProdWorkspaceDB()
 
     const databaseExists = await database.exists()

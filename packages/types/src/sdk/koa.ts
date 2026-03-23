@@ -89,14 +89,14 @@ export interface BBContext extends Ctx {
 export interface ContextEmitter {
   emitRow(values: {
     eventName: EventType.ROW_SAVE
-    appId: string
+    workspaceId: string
     row: Row
     table: Table
     user: UserBindings
   }): void
   emitRow(values: {
     eventName: EventType.ROW_UPDATE
-    appId: string
+    workspaceId: string
     row: Row
     table: Table
     oldRow: Row
@@ -104,13 +104,13 @@ export interface ContextEmitter {
   }): void
   emitRow(values: {
     eventName: EventType.ROW_DELETE
-    appId: string
+    workspaceId: string
     row: Row
     user: UserBindings
   }): void
   emitTable(
     eventName: EventType.TABLE_SAVE | EventType.TABLE_DELETE,
-    appId: string,
+    workspaceId: string,
     table?: Table
   ): void
 }

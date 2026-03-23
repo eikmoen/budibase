@@ -267,9 +267,9 @@ export default class TestConfiguration {
     }
   }
 
-  async withApp<R>(workspace: Workspace | string, f: () => Promise<R>) {
-    const oldAppId = this.devWorkspaceId
-    const oldProdAppId = this.prodWorkspaceId
+  async withWorkspace<R>(workspace: Workspace | string, f: () => Promise<R>) {
+    const oldWorkspaceId = this.devWorkspaceId
+    const oldProdWorkspaceId = this.prodWorkspaceId
     this.devWorkspaceId =
       typeof workspace === "string" ? workspace : workspace.appId
     this.prodWorkspaceId = dbCore.getProdWorkspaceID(this.devWorkspaceId)
@@ -277,14 +277,14 @@ export default class TestConfiguration {
       try {
         return await f()
       } finally {
-        this.devWorkspaceId = oldAppId
-        this.prodWorkspaceId = oldProdAppId
+        this.devWorkspaceId = oldWorkspaceId
+        this.prodWorkspaceId = oldProdWorkspaceId
       }
     })
   }
 
-  async withProdApp<R>(f: () => Promise<R>) {
-    return await this.withApp(this.getProdWorkspaceId(), f)
+  async withProdWorkspace<R>(f: () => Promise<R>) {
+    return await this.withWorkspace(this.getProdWorkspaceId(), f)
   }
 
   // UTILS

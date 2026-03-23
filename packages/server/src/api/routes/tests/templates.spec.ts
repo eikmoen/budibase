@@ -109,7 +109,7 @@ describe("/templates", () => {
       expect(app.name).toBe(name)
       expect(app.url).toBe(url)
 
-      await config.withApp(app, async () => {
+      await config.withWorkspace(app, async () => {
         const tables = await config.api.table.fetch()
         expect(tables).toHaveLength(2)
 
@@ -139,7 +139,7 @@ describe("/templates", () => {
         templateKey: "app/agency-client-portal",
       })
 
-      await config.withApp(app, async () => {
+      await config.withWorkspace(app, async () => {
         const migrationVersion = await getWorkspaceMigrationVerions(app.appId)
 
         expect(migrationVersion).toBe("202506021500_test")

@@ -290,7 +290,7 @@ class AutomationRunner<TStep extends AutomationTriggerStepId> {
     // wrap the trigger call to make tests a bit cleaner. If you really want to
     // test triggering an automation in a dev workspace context, you can use the
     // automation API directly.
-    return await this.config.withProdApp(async () => {
+    return await this.config.withProdWorkspace(async () => {
       try {
         return await this.config.api.automation.trigger(
           this.automation._id!,

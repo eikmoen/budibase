@@ -28,7 +28,9 @@ describe("row saved trigger", () => {
 
   it("should queue a Bull job when a row is created", async () => {
     const results = await captureAutomationResults(automation, () =>
-      config.withProdApp(() => config.api.row.save(table._id!, { name: "foo" }))
+      config.withProdWorkspace(() =>
+        config.api.row.save(table._id!, { name: "foo" })
+      )
     )
 
     expect(results).toHaveLength(1)
@@ -45,7 +47,7 @@ describe("row saved trigger", () => {
     await config.api.workspace.publish()
 
     const results = await captureAutomationResults(automation, () =>
-      config.withProdApp(() =>
+      config.withProdWorkspace(() =>
         config.api.row.save(otherTable._id!, { name: "foo" })
       )
     )

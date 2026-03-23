@@ -19,7 +19,7 @@ describe("/dev", () => {
         .set(config.defaultHeaders())
         .expect("Content-Type", /json/)
         .expect(200)
-      expect(events.app.reverted).toHaveBeenCalledTimes(1)
+      expect(events.workspace.reverted).toHaveBeenCalledTimes(1)
     })
   })
 

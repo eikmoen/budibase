@@ -12,7 +12,7 @@ export async function setupDefaultCompletionsAIConfig(
   const created: { workspaceId: string; id: string; rev: string }[] = []
 
   const configId = docIds.generateAIConfigID()
-  await config.withApp(config.getDevWorkspaceId(), async () => {
+  await config.withWorkspace(config.getDevWorkspaceId(), async () => {
     const db = context.getWorkspaceDB()
     const workspaceId = config.getDevWorkspaceId()
 
@@ -44,7 +44,7 @@ export async function setupDefaultCompletionsAIConfig(
 
   return async () => {
     for (const entry of created) {
-      await config.withApp(entry.workspaceId, async () => {
+      await config.withWorkspace(entry.workspaceId, async () => {
         const db = context.getWorkspaceDB()
         await db.remove(entry.id, entry.rev)
       })

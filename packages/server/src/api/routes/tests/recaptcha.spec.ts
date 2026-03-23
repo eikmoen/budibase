@@ -143,7 +143,7 @@ describe("/recaptcha", () => {
 
     it("should return 498 when recaptcha enabled but no cookie present", async () => {
       await setRecaptchaEnabled(true)
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         await config.api.table.get(tableId, {
           status: 498,
         })
@@ -152,7 +152,7 @@ describe("/recaptcha", () => {
 
     it("should allow request when recaptcha disabled", async () => {
       await setRecaptchaEnabled(false)
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         await config.api.table.get(tableId, {
           status: 200,
         })
@@ -170,7 +170,7 @@ describe("/recaptcha", () => {
       )
       const cookie = verifyRes.headers["set-cookie"]
 
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         await config.withHeaders({ Cookie: cookie }, async () => {
           await config.api.table.get(tableId, {
             status: 200,
@@ -190,7 +190,7 @@ describe("/recaptcha", () => {
       )
       expect(verifyRes.body.verified).toBe(false)
 
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         await config.api.table.get(tableId, {
           status: 498,
         })

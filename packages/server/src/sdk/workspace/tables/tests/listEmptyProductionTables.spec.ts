@@ -17,7 +17,7 @@ describe("listEmptyProductionTables", () => {
     const table = await config.api.table.save(basicTable())
     await config.publish()
 
-    await config.withProdApp(async () => {
+    await config.withProdWorkspace(async () => {
       const db = context.getWorkspaceDB()
       for (let i = 0; i < 30; i++) {
         const rowId = generateRowID(
@@ -47,7 +47,7 @@ describe("listEmptyProductionTables", () => {
     const table = await config.api.table.save(basicTable())
     await config.publish()
 
-    await config.withProdApp(async () => {
+    await config.withProdWorkspace(async () => {
       const db = context.getWorkspaceDB()
       // First batch: deleted rows
       for (let i = 0; i < 25; i++) {

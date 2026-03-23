@@ -54,7 +54,7 @@ describe("Webhook trigger test", () => {
 
   it("should run the webhook automation - checking for parameters", async () => {
     const { webhook } = await createWebhookAutomation()
-    const res = await config.withProdApp(() =>
+    const res = await config.withProdWorkspace(() =>
       config.api.webhook.trigger(config.getProdWorkspaceId(), webhook._id!, {
         parameter: "testing",
       })

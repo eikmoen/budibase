@@ -252,7 +252,7 @@ export async function processPWAZip(ctx: UserCtx) {
 
     const icons = []
     const baseDir = path.dirname(iconsJsonPath)
-    const appId = context.getProdWorkspaceId()
+    const workspaceId = context.getProdWorkspaceId()
 
     for (const icon of iconsData.icons) {
       const resolvedSrc = icon.src ? path.resolve(baseDir, icon.src) : undefined
@@ -267,7 +267,7 @@ export async function processPWAZip(ctx: UserCtx) {
       }
 
       const extension = path.extname(icon.src) || ".png"
-      const key = `${appId}/pwa/${uuid.v4()}${extension}`
+      const key = `${workspaceId}/pwa/${uuid.v4()}${extension}`
       const mimeType =
         icon.type || (extension === ".png" ? "image/png" : "image/jpeg")
 
@@ -320,7 +320,7 @@ export const serveApp = async function (ctx: UserCtx<void, ServeAppResponse>) {
   // No app ID found, cannot serve - return message instead
   const workspaceId = context.getWorkspaceId()
   if (!workspaceId) {
-    ctx.body = "No content found - requires app ID"
+    ctx.body = "No content found - requires workspace ID"
     return
   }
 
@@ -477,7 +477,7 @@ export const serveBuilderPreview = async function (
   const appInfo = await db.get<Workspace>(DocumentType.WORKSPACE_METADATA)
 
   if (!env.isJest()) {
-    let appId = context.getWorkspaceId()
+    let workspaceId = context.getWorkspaceId()
     const templateLoc = join(__dirname, "templates")
     const previewLoc = fs.existsSync(templateLoc) ? templateLoc : __dirname
     const previewHbs = loadHandlebarsFile(join(previewLoc, "preview.hbs"))
@@ -487,7 +487,7 @@ export const serveBuilderPreview = async function (
       false
     let props: any = {
       clientLibPath: await objectStore.clientLibraryUrl(
-        appId!,
+        workspaceId!,
         appInfo.version
       ),
       nonce,
@@ -638,8 +638,8 @@ export const getSignedUploadURL = async function (
 }
 
 export async function servePwaManifest(ctx: UserCtx<void, any>) {
-  const appId = context.getWorkspaceId()
-  if (!appId) {
+  const workspaceId = context.getWorkspaceId()
+  if (!workspaceId) {
     ctx.throw(404)
   }
 

@@ -30,7 +30,7 @@ describe("row deleted trigger", () => {
 
   it("should trigger when a row is deleted", async () => {
     const jobs = await captureAutomationResults(automation, async () => {
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         const row = await config.api.row.save(table._id!, { name: "foo" })
         await config.api.row.delete(table._id!, { _id: row._id! })
       })
@@ -50,7 +50,7 @@ describe("row deleted trigger", () => {
     await config.api.workspace.publish()
 
     const jobs = await captureAutomationResults(automation, async () => {
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         const row = await config.api.row.save(otherTable._id!, { name: "bar" })
         await config.api.row.delete(otherTable._id!, { _id: row._id! })
       })

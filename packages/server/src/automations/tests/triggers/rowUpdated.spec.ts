@@ -28,7 +28,7 @@ describe("row updated trigger", () => {
 
   it("should queue a Bull job when a row is updated", async () => {
     const results = await captureAutomationResults(automation, async () => {
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         const row = await config.api.row.save(table._id!, { name: "foo" })
         await config.api.row.save(table._id!, { _id: row._id!, name: "bar" })
       })
@@ -48,7 +48,7 @@ describe("row updated trigger", () => {
     await config.api.workspace.publish()
 
     const results = await captureAutomationResults(automation, async () => {
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         const row = await config.api.row.save(otherTable._id!, { name: "foo" })
         await config.api.row.save(otherTable._id!, {
           _id: row._id!,

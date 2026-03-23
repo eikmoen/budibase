@@ -753,7 +753,7 @@ describe.each([true, false])("migrationsProcessor", fromProd => {
           SYNC_MIGRATION_CHECKS_MS: 1000,
         },
         () =>
-          config.withApp(
+          config.withWorkspace(
             fromProd ? config.getProdWorkspace() : config.getDevWorkspace(),
             () =>
               config.api.user.fetch({

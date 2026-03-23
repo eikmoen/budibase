@@ -831,26 +831,26 @@ async function creationEvents(
   if (useTemplate === "true") {
     // from template
     if (templateKey && templateKey !== "undefined") {
-      creationFns.push(a => events.app.templateImported(a, templateKey))
+      creationFns.push(a => events.workspace.templateImported(a, templateKey))
     }
     // from file
     else if (request.files?.fileToImport) {
-      creationFns.push(a => events.app.fileImported(a))
+      creationFns.push(a => events.workspace.fileImported(a))
     }
     // from server file path
     else if (file) {
       // explicitly pass in the newly created workspace id
-      creationFns.push(a => events.app.duplicated(a, workspace.appId))
+      creationFns.push(a => events.workspace.duplicated(a, workspace.appId))
     }
     // unknown
     else {
       console.error("Could not determine template creation event")
     }
   } else if (request.files?.fileToImport) {
-    creationFns.push(a => events.app.fileImported(a))
+    creationFns.push(a => events.workspace.fileImported(a))
   }
 
-  creationFns.push(a => events.app.created(a))
+  creationFns.push(a => events.workspace.created(a))
 
   for (let fn of creationFns) {
     await fn(workspace)
@@ -928,7 +928,7 @@ export async function update(
   }
 
   const app = await updateWorkspacePackage(ctx.request.body, ctx.params.appId)
-  await events.app.updated(app)
+  await events.workspace.updated(app)
   ctx.body = app
   builderSocket?.emitAppMetadataUpdate(ctx, {
     theme: app.theme,
@@ -971,7 +971,7 @@ export async function updateClient(
     workspacePackageUpdates,
     ctx.params.appId
   )
-  await events.app.versionUpdated(
+  await events.workspace.versionUpdated(
     updatedWorkspace,
     currentVersion,
     updatedToVersion
@@ -1009,7 +1009,7 @@ export async function revertClient(
     workspacePackageUpdates,
     ctx.params.appId
   )
-  await events.app.versionReverted(
+  await events.workspace.versionReverted(
     updatedWorkspace,
     currentVersion,
     revertedToVersion
@@ -1038,7 +1038,7 @@ async function unpublishWorkspace() {
     await disableAllAppsAndAutomations()
   })
 
-  await events.app.unpublished({ appId: prodWorkspaceId } as Workspace)
+  await events.workspace.unpublished({ appId: prodWorkspaceId } as Workspace)
 
   await cache.workspace.invalidateWorkspaceMetadata(prodWorkspaceId)
 }
@@ -1067,7 +1067,7 @@ async function destroyWorkspace(ctx: UserCtx) {
     await sdk.workspaces.syncWorkspace(devWorkspaceId, {
       automationOnly: true,
     })
-    await events.app.unpublished({ appId: prodWorkspaceId } as Workspace)
+    await events.workspace.unpublished({ appId: prodWorkspaceId } as Workspace)
     await cleanupAutomations(prodWorkspaceId)
     const prodDb = dbCore.getDB(prodWorkspaceId, { skip_setup: true })
     await prodDb.destroy()
@@ -1078,7 +1078,7 @@ async function destroyWorkspace(ctx: UserCtx) {
   // standard app deletion flow
   const result = await db.destroy()
   await quotas.removeApp()
-  await events.app.deleted(app)
+  await events.workspace.deleted(app)
 
   await deleteAppFiles(prodWorkspaceId)
 

@@ -403,7 +403,7 @@ describe("/automations", () => {
       const { automation } = await config.api.automation.post(newAutomation())
       await config.publish()
 
-      await config.withProdApp(() =>
+      await config.withProdWorkspace(() =>
         config.api.automation.trigger(
           automation._id!,
           {

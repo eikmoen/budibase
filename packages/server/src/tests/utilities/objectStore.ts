@@ -1,20 +1,21 @@
 import { db, objectStore } from "@budibase/backend-core"
 
-export async function getAppObjectStorageEtags(appId: string) {
-  appId = db.getProdWorkspaceID(appId)
+export async function getWorkspaceObjectStorageEtags(workspaceId: string) {
+  workspaceId = db.getProdWorkspaceID(workspaceId)
 
   const objects = await objectStore.getAllFiles(
     objectStore.ObjectStoreBuckets.WORKSPACES,
-    appId
+    workspaceId
   )
 
   const fileEtags = Object.entries(objects).reduce<Record<string, string>>(
     (etags, [key, object]) => {
       if (object.ETag) {
-        etags[key.replace(new RegExp(`^${appId}/`), "")] = object.ETag.replace(
-          new RegExp('^"'),
-          ""
-        ).replace(new RegExp('"$'), "")
+        etags[key.replace(new RegExp(`^${workspaceId}/`), "")] =
+          object.ETag.replace(new RegExp('^"'), "").replace(
+            new RegExp('"$'),
+            ""
+          )
       }
       return etags
     },

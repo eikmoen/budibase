@@ -19,7 +19,7 @@ import { createAutomationBuilder } from "../../../automations/tests/utilities/Au
 import { WorkspaceStatus } from "../../../db/utils"
 import env from "../../../environment"
 import sdk from "../../../sdk"
-import { getAppObjectStorageEtags } from "../../../tests/utilities/objectStore"
+import { getWorkspaceObjectStorageEtags } from "../../../tests/utilities/objectStore"
 import {
   basicQuery,
   basicScreen,
@@ -29,7 +29,7 @@ import {
 import * as setup from "./utilities"
 import { checkBuilderEndpoint } from "./utilities/TestFunctions"
 
-const generateAppName = () => {
+const generateWorkspaceName = () => {
   return structures.generator.word({ length: 10 })
 }
 
@@ -160,13 +160,13 @@ describe("/applications", () => {
     }
 
     it("creates empty app without sample data", async () => {
-      const name = generateAppName()
+      const name = generateWorkspaceName()
       const newWorkspace = await config.api.workspace.create({
         name,
       })
       expect(newWorkspace.name).toBe(name)
       expect(newWorkspace._id).toBeDefined()
-      expect(events.app.created).toHaveBeenCalledTimes(1)
+      expect(events.workspace.created).toHaveBeenCalledTimes(1)
 
       // Ensure we created a blank app without sample data
       await checkScreenCount(0)
@@ -185,10 +185,10 @@ describe("/applications", () => {
     it("adds the workspace creator to the dev users table", async () => {
       const creator = config.getUser()
       const newWorkspace = await config.api.workspace.create({
-        name: generateAppName(),
+        name: generateWorkspaceName(),
       })
 
-      await config.withApp(newWorkspace, async () => {
+      await config.withWorkspace(newWorkspace, async () => {
         const rows = await config.api.row.fetch(USERS_TABLE_SCHEMA._id!)
         const userRow = rows.find(row => row.email === creator.email)
         expect(userRow).toBeDefined()
@@ -203,10 +203,10 @@ describe("/applications", () => {
       expect(newWorkspace._id).toBeDefined()
       expect(newWorkspace.name).toBe("Default workspace")
       expect(newWorkspace.navigation?.title).toBe("Default workspace")
-      expect(events.app.created).toHaveBeenCalledTimes(1)
+      expect(events.workspace.created).toHaveBeenCalledTimes(1)
 
       // Check the onboarding path now creates an empty workspace baseline
-      await config.withApp(newWorkspace, async () => {
+      await config.withWorkspace(newWorkspace, async () => {
         const res = await config.api.workspace.getDefinition(newWorkspace.appId)
         expect(res.screens.length).toEqual(0)
 
@@ -250,16 +250,16 @@ describe("/applications", () => {
         )
 
       const newApp = await config.api.workspace.create({
-        name: generateAppName(),
+        name: generateWorkspaceName(),
         useTemplate: "true",
         templateKey: "app/expense-approval",
       })
       expect(newApp._id).toBeDefined()
-      expect(events.app.created).toHaveBeenCalledTimes(1)
-      expect(events.app.templateImported).toHaveBeenCalledTimes(1)
+      expect(events.workspace.created).toHaveBeenCalledTimes(1)
+      expect(events.workspace.templateImported).toHaveBeenCalledTimes(1)
 
       // Check resources from template in the newly created app context
-      await config.withApp(newApp, async () => {
+      await config.withWorkspace(newApp, async () => {
         const res = await config.api.workspace.getDefinition(newApp.appId)
         expect(res.screens.length).toEqual(6)
 
@@ -270,16 +270,16 @@ describe("/applications", () => {
 
     it("creates app from file", async () => {
       const newApp = await config.api.workspace.create({
-        name: generateAppName(),
+        name: generateWorkspaceName(),
         useTemplate: "true",
         fileToImport: "src/api/routes/tests/data/old-app.txt", // export.tx was empty
       })
       expect(newApp._id).toBeDefined()
-      expect(events.app.created).toHaveBeenCalledTimes(1)
-      expect(events.app.fileImported).toHaveBeenCalledTimes(1)
+      expect(events.workspace.created).toHaveBeenCalledTimes(1)
+      expect(events.workspace.fileImported).toHaveBeenCalledTimes(1)
 
       // Check resources from import file in the newly created app context
-      await config.withApp(newApp, async () => {
+      await config.withWorkspace(newApp, async () => {
         const res = await config.api.workspace.getDefinition(newApp.appId)
         expect(res.screens.length).toEqual(1)
 
@@ -299,7 +299,7 @@ describe("/applications", () => {
 
     it("migrates navigation settings from old apps", async () => {
       const app = await config.api.workspace.create({
-        name: generateAppName(),
+        name: generateWorkspaceName(),
         useTemplate: "true",
         fileToImport: "src/api/routes/tests/data/old-app.txt",
       })
@@ -315,8 +315,8 @@ describe("/applications", () => {
       expect(app.navigation!.navTextColor).toBe(
         "var(--spectrum-global-color-gray-50)"
       )
-      expect(events.app.created).toHaveBeenCalledTimes(1)
-      expect(events.app.fileImported).toHaveBeenCalledTimes(1)
+      expect(events.workspace.created).toHaveBeenCalledTimes(1)
+      expect(events.workspace.fileImported).toHaveBeenCalledTimes(1)
     })
 
     it("should reject with a known name", async () => {
@@ -340,26 +340,26 @@ describe("/applications", () => {
       )
     })
 
-    it("creates app from a old import", async () => {
-      const newApp = await config.api.workspace.createFromImport({
-        name: generateAppName(),
+    it("creates workspace from a old import", async () => {
+      const newWorkspace = await config.api.workspace.createFromImport({
+        name: generateWorkspaceName(),
         fileToImport: path.join(__dirname, "data", "old-export.enc.tar.gz"),
         encryptionPassword: "testtest",
       })
-      expect(newApp._id).toBeDefined()
-      expect(events.app.created).toHaveBeenCalledTimes(1)
-      expect(events.app.fileImported).toHaveBeenCalledTimes(1)
+      expect(newWorkspace._id).toBeDefined()
+      expect(events.workspace.created).toHaveBeenCalledTimes(1)
+      expect(events.workspace.fileImported).toHaveBeenCalledTimes(1)
 
       // Check resources from import file in the newly created app context
-      await config.withApp(newApp, async () => {
-        const res = await config.api.workspace.getDefinition(newApp.appId)
+      await config.withWorkspace(newWorkspace, async () => {
+        const res = await config.api.workspace.getDefinition(newWorkspace.appId)
         expect(res.screens.length).toEqual(2)
 
         const tables = await config.api.table.fetch()
         expect(tables.length).toEqual(7)
       })
 
-      const fileEtags = await getAppObjectStorageEtags(newApp.appId)
+      const fileEtags = await getWorkspaceObjectStorageEtags(newWorkspace.appId)
       expect(fileEtags).toEqual({
         // These etags match the ones from the export file
         "budibase-client.js": "a0ab956601262aae131122b3f65102da-2",
@@ -369,7 +369,7 @@ describe("/applications", () => {
 
     it("creates app from a new import", async () => {
       const newApp = await config.api.workspace.createFromImport({
-        name: generateAppName(),
+        name: generateWorkspaceName(),
         fileToImport: path.join(
           __dirname,
           "data",
@@ -377,11 +377,11 @@ describe("/applications", () => {
         ),
       })
       expect(newApp._id).toBeDefined()
-      expect(events.app.created).toHaveBeenCalledTimes(1)
-      expect(events.app.fileImported).toHaveBeenCalledTimes(1)
+      expect(events.workspace.created).toHaveBeenCalledTimes(1)
+      expect(events.workspace.fileImported).toHaveBeenCalledTimes(1)
 
       // Check resources from import file in the newly created app context
-      await config.withApp(newApp, async () => {
+      await config.withWorkspace(newApp, async () => {
         const res = await config.api.workspace.getDefinition(newApp.appId)
         expect(res.screens.length).toEqual(6)
 
@@ -389,7 +389,7 @@ describe("/applications", () => {
         expect(tables.length).toEqual(3)
       })
 
-      const fileEtags = await getAppObjectStorageEtags(newApp.appId)
+      const fileEtags = await getWorkspaceObjectStorageEtags(newApp.appId)
       expect(fileEtags).toEqual({
         // These etags match the ones from the export file
         "budibase-client.js": "e5cc573e15b6f763059fb39c7023563b",
@@ -517,9 +517,9 @@ describe("/applications", () => {
       })
     })
 
-    it("preserves app scripts when creating from an import", async () => {
+    it("preserves workspace scripts when creating from an import", async () => {
       const sourceWorkspace = await config.api.workspace.create({
-        name: generateAppName(),
+        name: generateWorkspaceName(),
       })
       const scripts = [
         {
@@ -536,22 +536,28 @@ describe("/applications", () => {
           html: "<script>window.__testBody = true</script>",
         },
       ]
-      await config.withApp(sourceWorkspace, async () => {
+      await config.withWorkspace(sourceWorkspace, async () => {
         await config.api.workspace.update(sourceWorkspace.appId, { scripts })
       })
 
-      const exportPath = await sdk.backups.exportApp(sourceWorkspace.appId, {
-        tar: true,
-      })
+      const exportPath = await sdk.backups.exportWorkspace(
+        sourceWorkspace.appId,
+        {
+          tar: true,
+        }
+      )
 
       const newWorkspace = await config.api.workspace.createFromImport({
-        name: generateAppName(),
+        name: generateWorkspaceName(),
         fileToImport: exportPath,
       })
 
-      const workspacePackage = await config.withApp(newWorkspace, async () => {
-        return await config.api.workspace.getAppPackage(newWorkspace.appId)
-      })
+      const workspacePackage = await config.withWorkspace(
+        newWorkspace,
+        async () => {
+          return await config.api.workspace.getAppPackage(newWorkspace.appId)
+        }
+      )
       const importedScripts = workspacePackage.application.scripts || []
       expect(importedScripts).toHaveLength(scripts.length)
 
@@ -683,7 +689,7 @@ describe("/applications", () => {
           url: "workspace2",
         })
 
-        await config.withApp(secondWorkspace, async () => {
+        await config.withWorkspace(secondWorkspace, async () => {
           await config.api.workspaceApp.create(
             structures.workspaceApps.createRequest({
               name: "App Two",
@@ -761,7 +767,7 @@ describe("/applications", () => {
           name: "Second workspace",
         })
 
-        await config.withApp(secondWorkspace, () =>
+        await config.withWorkspace(secondWorkspace, () =>
           config.api.workspaceApp.create(
             structures.workspaceApps.createRequest({
               name: "Default",
@@ -777,7 +783,7 @@ describe("/applications", () => {
       const thirdWorkspace = await config.api.workspace.create({
         name: "Third App",
       })
-      await config.withApp(thirdWorkspace, () =>
+      await config.withWorkspace(thirdWorkspace, () =>
         config.api.workspaceApp.create(structures.workspaceApps.createRequest())
       )
 
@@ -1150,7 +1156,7 @@ describe("/applications", () => {
 
         it("should retrieve only the screens for a the workspace for prod app", async () => {
           await config.publish()
-          await config.withProdApp(() =>
+          await config.withProdWorkspace(() =>
             config.withHeaders(
               {
                 referer: `http://localhost:10000/app${config.prodWorkspace?.url}`,
@@ -1194,7 +1200,7 @@ describe("/applications", () => {
             }
           )
 
-          await config.withProdApp(() =>
+          await config.withProdWorkspace(() =>
             config.withHeaders(
               {
                 referer: `http://localhost:10000/app-chat${config.prodWorkspace?.url}`,
@@ -1225,7 +1231,7 @@ describe("/applications", () => {
         name: "TEST_APP",
       })
       expect(updatedApp._rev).toBeDefined()
-      expect(events.app.updated).toHaveBeenCalledTimes(1)
+      expect(events.workspace.updated).toHaveBeenCalledTimes(1)
     })
 
     it("trims workspace name before saving when updating", async () => {
@@ -1240,12 +1246,12 @@ describe("/applications", () => {
   describe("publish", () => {
     it("should publish app with dev app ID", async () => {
       await config.api.workspace.publish(workspace.appId)
-      expect(events.app.published).toHaveBeenCalledTimes(1)
+      expect(events.workspace.published).toHaveBeenCalledTimes(1)
     })
 
     it("should publish app with prod app ID", async () => {
       await config.api.workspace.publish(workspace.appId.replace("_dev", ""))
-      expect(events.app.published).toHaveBeenCalledTimes(1)
+      expect(events.workspace.published).toHaveBeenCalledTimes(1)
     })
 
     it("should seed production tables when requested", async () => {
@@ -1295,7 +1301,7 @@ describe("/applications", () => {
         automationIds: [automation._id!],
       })
 
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         const { automations } = await config.api.automation.fetch()
         expect(
           automations.find(auto => auto._id === automation._id!)
@@ -1353,7 +1359,7 @@ describe("/applications", () => {
         workspaceAppIds: [workspaceApp1._id],
       })
 
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         const screens = await config.api.screen.list()
 
         // published screen should be included
@@ -1397,7 +1403,7 @@ describe("/applications", () => {
       await config.publish()
 
       // Verify permissions are correctly published to production
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         const prodPermissions = await config.api.permission.get(table._id!)
         expect(prodPermissions.permissions.read.role).toBe(customRole.name)
 
@@ -1413,13 +1419,13 @@ describe("/applications", () => {
   describe("manage client library version", () => {
     it("should be able to update the app client library version", async () => {
       await config.api.workspace.updateClient(workspace.appId)
-      expect(events.app.versionUpdated).toHaveBeenCalledTimes(1)
+      expect(events.workspace.versionUpdated).toHaveBeenCalledTimes(1)
     })
 
     it("should be able to revert the app client library version", async () => {
       await config.api.workspace.updateClient(workspace.appId)
       await config.api.workspace.revertClient(workspace.appId)
-      expect(events.app.versionReverted).toHaveBeenCalledTimes(1)
+      expect(events.workspace.versionReverted).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -1428,14 +1434,14 @@ describe("/applications", () => {
       const app = await tk.withFreeze(
         "2021-01-01",
         async () =>
-          await config.api.workspace.create({ name: generateAppName() })
+          await config.api.workspace.create({ name: generateWorkspaceName() })
       )
       expect(app.updatedAt).toEqual("2021-01-01T00:00:00.000Z")
 
       const updatedApp = await tk.withFreeze(
         "2021-02-01",
         async () =>
-          await config.withApp(app, () =>
+          await config.withWorkspace(app, () =>
             config.api.workspace.update(app.appId, {
               name: "UPDATED_NAME",
             })
@@ -1456,7 +1462,7 @@ describe("/applications", () => {
     })
 
     it("app should not sync if production", async () => {
-      const { message } = await config.withProdApp(() =>
+      const { message } = await config.withProdWorkspace(() =>
         config.api.workspace.sync(workspace.appId.replace("_dev", ""), {
           status: 400,
         })
@@ -1480,14 +1486,14 @@ describe("/applications", () => {
   describe("unpublish", () => {
     it("should unpublish app with dev app ID", async () => {
       await config.api.workspace.unpublish(workspace.appId)
-      expect(events.app.unpublished).toHaveBeenCalledTimes(1)
+      expect(events.workspace.unpublished).toHaveBeenCalledTimes(1)
     })
 
     it("should unpublish app with prod app ID", async () => {
-      await config.withProdApp(() =>
+      await config.withProdWorkspace(() =>
         config.api.workspace.unpublish(workspace.appId.replace("_dev", ""))
       )
-      expect(events.app.unpublished).toHaveBeenCalledTimes(1)
+      expect(events.workspace.unpublished).toHaveBeenCalledTimes(1)
     })
 
     it("should not delete production data when unpublishing and republishing", async () => {
@@ -1496,11 +1502,11 @@ describe("/applications", () => {
       // Ensure the table exists in production
       await config.api.workspace.publish(config.getDevWorkspaceId())
 
-      const prodRow = await config.withProdApp(() =>
+      const prodRow = await config.withProdWorkspace(() =>
         config.api.row.save(table._id!, { name: "Prod row" })
       )
 
-      const prodRowsBefore = await config.withProdApp(() =>
+      const prodRowsBefore = await config.withProdWorkspace(() =>
         config.api.row.search(table._id!, { query: {} })
       )
       expect(prodRowsBefore.rows.find(r => r._id === prodRow._id)).toBeDefined()
@@ -1508,7 +1514,7 @@ describe("/applications", () => {
       await config.api.workspace.unpublish(config.getDevWorkspaceId())
       await config.api.workspace.publish(config.getDevWorkspaceId())
 
-      const prodRowsAfter = await config.withProdApp(() =>
+      const prodRowsAfter = await config.withProdWorkspace(() =>
         config.api.row.search(table._id!, { query: {} })
       )
       expect(prodRowsAfter.rows.find(r => r._id === prodRow._id)).toBeDefined()
@@ -1522,8 +1528,8 @@ describe("/applications", () => {
         .reply(200, {})
 
       await config.api.workspace.delete(workspace.appId)
-      expect(events.app.deleted).toHaveBeenCalledTimes(1)
-      expect(events.app.unpublished).toHaveBeenCalledTimes(1)
+      expect(events.workspace.deleted).toHaveBeenCalledTimes(1)
+      expect(events.workspace.unpublished).toHaveBeenCalledTimes(1)
     })
 
     it("should delete published app and dev app with prod app ID", async () => {
@@ -1532,9 +1538,11 @@ describe("/applications", () => {
         .delete(`/api/global/roles/${prodAppId}`)
         .reply(200, {})
 
-      await config.withProdApp(() => config.api.workspace.delete(prodAppId))
-      expect(events.app.deleted).toHaveBeenCalledTimes(1)
-      expect(events.app.unpublished).toHaveBeenCalledTimes(1)
+      await config.withProdWorkspace(() =>
+        config.api.workspace.delete(prodAppId)
+      )
+      expect(events.workspace.deleted).toHaveBeenCalledTimes(1)
+      expect(events.workspace.unpublished).toHaveBeenCalledTimes(1)
     })
 
     it("should remove MIGRATING_APP header if present during deletion", async () => {
@@ -1566,7 +1574,7 @@ describe("/applications", () => {
       )
 
       expect(migrationMock).toHaveBeenCalledTimes(2)
-      expect(events.app.deleted).toHaveBeenCalledTimes(1)
+      expect(events.workspace.deleted).toHaveBeenCalledTimes(1)
 
       migrationsModule.MIGRATIONS.pop()
     })
@@ -1585,7 +1593,7 @@ describe("/applications", () => {
         }
       )
 
-      expect(events.app.duplicated).toHaveBeenCalled()
+      expect(events.workspace.duplicated).toHaveBeenCalled()
       expect(resp.duplicateAppId).toBeDefined()
       expect(resp.sourceAppId).toEqual(workspace.appId)
       expect(resp.duplicateAppId).not.toEqual(workspace.appId)
@@ -1613,7 +1621,7 @@ describe("/applications", () => {
         },
         { body: { message: "Workspace name is already in use." }, status: 400 }
       )
-      expect(events.app.duplicated).not.toHaveBeenCalled()
+      expect(events.workspace.duplicated).not.toHaveBeenCalled()
     })
 
     it("should reject with a known url", async () => {
@@ -1625,7 +1633,7 @@ describe("/applications", () => {
         },
         { body: { message: "App URL is already in use." }, status: 400 }
       )
-      expect(events.app.duplicated).not.toHaveBeenCalled()
+      expect(events.workspace.duplicated).not.toHaveBeenCalled()
     })
   })
 
@@ -1760,7 +1768,7 @@ describe("/applications", () => {
 
       await config.publish()
 
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         const prodRows = await config.api.row.fetch(table._id!)
         await config.api.row.bulkDelete(table._id!, { rows: prodRows })
 

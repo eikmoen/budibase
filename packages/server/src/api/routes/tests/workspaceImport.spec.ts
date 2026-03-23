@@ -1,5 +1,5 @@
 import path from "path"
-import { getAppObjectStorageEtags } from "../../../tests/utilities/objectStore"
+import { getWorkspaceObjectStorageEtags } from "../../../tests/utilities/objectStore"
 import * as setup from "./utilities"
 
 const PASSWORD = "testtest"
@@ -44,7 +44,7 @@ describe("/applications/:appId/import", () => {
     expect(apps.length).toBe(1)
     expect(apps[0].name).toBe(config.getDevWorkspace().name)
 
-    const fileEtags = await getAppObjectStorageEtags(appId)
+    const fileEtags = await getWorkspaceObjectStorageEtags(appId)
     expect(fileEtags).toEqual({
       // These etags match the ones from the export file
       "budibase-client.js": "a0ab956601262aae131122b3f65102da-2",
@@ -84,7 +84,7 @@ describe("/applications/:appId/import", () => {
     expect(apps.length).toBe(1)
     expect(apps[0].name).toBe("Change request management")
 
-    const fileEtags = await getAppObjectStorageEtags(appId)
+    const fileEtags = await getWorkspaceObjectStorageEtags(appId)
     expect(fileEtags).toEqual({
       "budibase-client.js": "e5cc573e15b6f763059fb39c7023563b",
       "chunks/Accordion-2cb8cb47.js": "6c31abff08901e08cbccddb166c45595",

@@ -96,7 +96,7 @@ describe("/backups", () => {
         config.getDevWorkspaceId()
       )
       expect(body instanceof Buffer).toBe(true)
-      expect(events.app.exported).toHaveBeenCalledTimes(1)
+      expect(events.workspace.exported).toHaveBeenCalledTimes(1)
 
       await checkExportContent(body, { includeRows: true, isEncrypted: false })
     })
@@ -109,7 +109,7 @@ describe("/backups", () => {
         }
       )
       expect(body instanceof Buffer).toBe(true)
-      expect(events.app.exported).toHaveBeenCalledTimes(1)
+      expect(events.workspace.exported).toHaveBeenCalledTimes(1)
 
       await checkExportContent(body, { includeRows: false, isEncrypted: false })
     })
@@ -152,7 +152,7 @@ describe("/backups", () => {
         }
       )
       expect(body instanceof Buffer).toBe(true)
-      expect(events.app.exported).toHaveBeenCalledTimes(1)
+      expect(events.workspace.exported).toHaveBeenCalledTimes(1)
 
       await checkExportContent(body, { isEncrypted: true, includeRows: true })
     })
@@ -172,7 +172,7 @@ describe("/backups", () => {
         }
       )
       expect(body instanceof Buffer).toBe(true)
-      expect(events.app.exported).toHaveBeenCalledTimes(1)
+      expect(events.workspace.exported).toHaveBeenCalledTimes(1)
 
       await checkExportContent(body, { isEncrypted: true, includeRows: false })
     })

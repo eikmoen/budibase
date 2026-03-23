@@ -29,47 +29,51 @@ class DevRevertProcessor extends queue.QueuedProcessor<DevRevertQueueData> {
     data: DevRevertQueueData
   ): Promise<{ message: string }> => {
     return await context.doInWorkspaceContext(data.workspaceId, () =>
-      this.revertApp(data)
+      this.revertWorkspace(data)
     )
   }
 
-  private async revertApp(
+  private async revertWorkspace(
     data: DevRevertQueueData
   ): Promise<{ message: string }> {
-    const { workspaceId: appId } = data
-    const productionAppId = dbCore.getProdWorkspaceID(appId)
+    const { workspaceId } = data
+    const productionWorkspaceId = dbCore.getProdWorkspaceID(workspaceId)
 
-    // App must have been deployed first
+    // Workspace must have been deployed first
     const db = context.getProdWorkspaceDB({ skip_setup: true })
 
-    const isPublished = await isWorkspacePublished(productionAppId)
+    const isPublished = await isWorkspacePublished(productionWorkspaceId)
     if (!isPublished) {
-      throw new queue.UnretriableError("App must be deployed to be reverted.")
+      throw new queue.UnretriableError(
+        "Workspace must be deployed to be reverted."
+      )
     }
     const deploymentDoc = await db.get<DeploymentDoc>(DocumentType.DEPLOYMENTS)
     if (
       !deploymentDoc.history ||
       Object.keys(deploymentDoc.history).length === 0
     ) {
-      throw new queue.UnretriableError("No deployments for app")
+      throw new queue.UnretriableError("No deployments for workspace")
     }
 
     const replication = new dbCore.Replication({
-      source: productionAppId,
-      target: appId,
+      source: productionWorkspaceId,
+      target: workspaceId,
     })
 
     try {
       await replication.rollback()
 
-      // update appID in reverted app to be dev version again
+      // update workspaceID in reverted workspace to be dev version again
       const db = context.getWorkspaceDB()
-      const appDoc = await db.get<Workspace>(DocumentType.WORKSPACE_METADATA)
-      appDoc.appId = appId
-      appDoc.instance._id = appId
-      await db.put(appDoc)
-      await cache.workspace.invalidateWorkspaceMetadata(appId)
-      await events.app.reverted(appDoc)
+      const workspaceDoc = await db.get<Workspace>(
+        DocumentType.WORKSPACE_METADATA
+      )
+      workspaceDoc.appId = workspaceId
+      workspaceDoc.instance._id = workspaceId
+      await db.put(workspaceDoc)
+      await cache.workspace.invalidateWorkspaceMetadata(workspaceId)
+      await events.workspace.reverted(workspaceDoc)
 
       return { message: "Reverted changes successfully." }
     } catch (err) {

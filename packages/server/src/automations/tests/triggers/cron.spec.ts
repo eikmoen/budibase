@@ -79,7 +79,7 @@ describe("cron trigger", () => {
       config.api.workspace.publish()
     )
 
-    await config.withProdApp(async () => {
+    await config.withProdWorkspace(async () => {
       let results: queue.TestQueueMessage<AutomationData>[] = []
       const removed = await captureAutomationRemovals(automation, async () => {
         results = await captureAutomationResults(automation, async () => {

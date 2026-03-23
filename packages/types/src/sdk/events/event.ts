@@ -182,8 +182,8 @@ export enum Event {
   PLUGIN_DELETED = "plugin:deleted",
 
   // BACKUP
-  APP_BACKUP_RESTORED = "app:backup:restored",
-  APP_BACKUP_TRIGGERED = "app:backup:triggered",
+  WORKSPACE_BACKUP_RESTORED = "app:backup:restored",
+  WORKSPACE_BACKUP_TRIGGERED = "app:backup:triggered",
 
   // ENVIRONMENT VARIABLE
   ENVIRONMENT_VARIABLE_CREATED = "environment_variable:created",
@@ -307,8 +307,8 @@ export const AuditedEventFriendlyName: Record<Event, string | undefined> = {
   [Event.WORKSPACE_APP_VERSION_REVERTED]: `App "{{ name }}" version reverted`,
   [Event.WORKSPACE_REVERTED]: `App "{{ name }}" reverted`,
   [Event.WORKSPACE_EXPORTED]: `App "{{ name }}" exported`,
-  [Event.APP_BACKUP_RESTORED]: `App backup "{{ name }}" restored`,
-  [Event.APP_BACKUP_TRIGGERED]: `App backup "{{ name }}" triggered`,
+  [Event.WORKSPACE_BACKUP_RESTORED]: `App backup "{{ name }}" restored`,
+  [Event.WORKSPACE_BACKUP_TRIGGERED]: `App backup "{{ name }}" triggered`,
 
   // DATASOURCE
   [Event.DATASOURCE_CREATED]: `Datasource created`,

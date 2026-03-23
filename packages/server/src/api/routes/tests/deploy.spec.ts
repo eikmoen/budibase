@@ -525,7 +525,7 @@ describe("/api/deploy", () => {
 
     await config.api.workspace.publish(config.devWorkspace!.appId)
 
-    await config.withProdApp(async () => {
+    await config.withProdWorkspace(async () => {
       const prodRows = await config.api.row.search(renamedTable._id!, {
         query: {},
       })
@@ -593,7 +593,7 @@ describe("/api/deploy", () => {
 
     await config.api.workspace.publish(config.devWorkspace!.appId)
 
-    await config.withProdApp(async () => {
+    await config.withProdWorkspace(async () => {
       const prodRows = await config.api.row.search(renamedTable._id!, {
         query: {},
       })
@@ -632,7 +632,7 @@ describe("/api/deploy", () => {
     await config.api.workspace.publish(config.devWorkspace!.appId)
 
     let prodRevNum: number | undefined
-    await config.withProdApp(async () => {
+    await config.withProdWorkspace(async () => {
       const prodTable = await config.api.table.get(renamedTable._id!)
       expect(prodTable._deleted).toBeFalsy()
       prodRevNum = parseInt(prodTable._rev!.split("-")[0])
@@ -674,7 +674,7 @@ describe("/api/deploy", () => {
     await config.api.workspace.publish(config.devWorkspace!.appId)
 
     let prodRevNum: number | undefined
-    await config.withProdApp(async () => {
+    await config.withProdWorkspace(async () => {
       const prodTable = await config.api.table.get(renamedTwice._id!)
       expect(prodTable._deleted).toBeFalsy()
       prodRevNum = parseInt(prodTable._rev!.split("-")[0])

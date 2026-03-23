@@ -59,7 +59,7 @@ async function _patch(
   ctx: UserCtx<PatchRowRequest, PatchRowResponse>,
   { isAutomation = false }: { isAutomation?: boolean } = {}
 ): Promise<void> {
-  const appId = ctx.appId
+  const workspaceId = ctx.appId
   const { tableId } = utils.getSourceId(ctx)
   const body = ctx.request.body
 
@@ -83,7 +83,7 @@ async function _patch(
 
     ctx.eventEmitter?.emitRow({
       eventName: EventType.ROW_UPDATE,
-      appId,
+      workspaceId,
       row,
       table,
       oldRow,
@@ -111,7 +111,7 @@ async function _save(
   const { tableId, viewId } = utils.getSourceId(ctx)
   const sourceId = viewId || tableId
 
-  const appId = ctx.appId
+  const workspaceId = ctx.appId
   const body = ctx.request.body
 
   // user metadata doesn't exist yet - don't allow creation
@@ -161,7 +161,7 @@ async function _save(
 
   ctx.eventEmitter?.emitRow({
     eventName: EventType.ROW_SAVE,
-    appId,
+    workspaceId: workspaceId,
     row,
     table,
     user: sdk.users.getUserContextBindings(ctx.user),
@@ -235,7 +235,7 @@ async function deleteRows(
   { isAutomation = false }: { isAutomation?: boolean } = {}
 ) {
   const { tableId } = utils.getSourceId(ctx)
-  const appId = ctx.appId
+  const workspaceId = ctx.appId
 
   let deleteRequest = ctx.request.body as DeleteRows
 
@@ -255,7 +255,7 @@ async function deleteRows(
   for (let row of rows) {
     ctx.eventEmitter?.emitRow({
       eventName: EventType.ROW_DELETE,
-      appId,
+      workspaceId: workspaceId,
       row,
       user: sdk.users.getUserContextBindings(ctx.user),
     })
@@ -268,7 +268,7 @@ async function deleteRow(
   ctx: UserCtx<DeleteRowRequest>,
   { isAutomation = false }: { isAutomation?: boolean } = {}
 ) {
-  const appId = ctx.appId
+  const workspaceId = ctx.appId
   const { tableId } = utils.getSourceId(ctx)
   const api = pickApi(tableId)
   const work = async () => {
@@ -283,7 +283,7 @@ async function deleteRow(
 
   ctx.eventEmitter?.emitRow({
     eventName: EventType.ROW_DELETE,
-    appId,
+    workspaceId: workspaceId,
     row: resp.row,
     user: sdk.users.getUserContextBindings(ctx.user),
   })

@@ -526,7 +526,7 @@ export const publishWorkspaceInternal = async (
   deployment.setStatus(DeploymentStatus.SUCCESS)
   await storeDeploymentHistory(deployment)
 
-  await events.app.published(migrationResult.app)
+  await events.workspace.published(migrationResult.app)
 
   builderSocket?.emitAppPublish(ctx)
   return deployment

@@ -161,7 +161,7 @@ export async function remove(
     await db.remove(workspaceAppId, _rev)
 
     // Clear out any favourites related to this
-    events.workspace.deleted(existing, context.getWorkspaceId()!)
+    events.workspaceApp.deleted(existing, context.getWorkspaceId()!)
   } catch (e: any) {
     if (e.status === 404) {
       throw new HTTPError(

@@ -28,7 +28,7 @@ describe("app action trigger", () => {
 
   it("should trigger when the app action is performed", async () => {
     const jobs = await captureAutomationResults(automation, async () => {
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         await config.api.automation.trigger(automation._id!, {
           fields: {},
           timeout: 1000,
@@ -62,7 +62,7 @@ describe("app action trigger", () => {
     await config.api.workspace.publish()
 
     const jobs = await captureAutomationResults(automation, async () => {
-      await config.withProdApp(async () => {
+      await config.withProdWorkspace(async () => {
         await config.api.automation.trigger(automation._id!, {
           fields: { text: "1", number: "2", boolean: "true" },
           timeout: 1000,

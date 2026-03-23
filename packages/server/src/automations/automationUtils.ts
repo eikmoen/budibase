@@ -235,14 +235,14 @@ export async function sendAutomationAttachmentsToStorage(
   return row
 }
 async function generateAttachmentRow(attachment: AutomationAttachment) {
-  const prodAppId = context.getProdWorkspaceId()
+  const prodWorkspaceId = context.getProdWorkspaceId()
 
   async function uploadToS3(
     extension: string,
     content: objectStore.StreamTypes
   ) {
     const fileName = `${uuid.v4()}${extension}`
-    const s3Key = `${prodAppId}/attachments/${fileName}`
+    const s3Key = `${prodWorkspaceId}/attachments/${fileName}`
 
     await objectStore.streamUpload({
       bucket: objectStore.ObjectStoreBuckets.WORKSPACES,
@@ -274,7 +274,7 @@ async function generateAttachmentRow(attachment: AutomationAttachment) {
     let s3Key = ""
     if (
       "path" in attachmentResult &&
-      attachmentResult.path.startsWith(`${prodAppId}/attachments/`)
+      attachmentResult.path.startsWith(`${prodWorkspaceId}/attachments/`)
     ) {
       s3Key = attachmentResult.path
     } else {

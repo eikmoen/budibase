@@ -99,7 +99,7 @@ describe("/screens", () => {
 
     async function checkScreens(roleId: string, screenIds: string[]) {
       await config.loginAsRole(roleId, async () => {
-        const res = await config.withProdApp(() =>
+        const res = await config.withProdWorkspace(() =>
           config.api.workspace.getDefinition(config.getProdWorkspaceId())
         )
         const screens = res.screens
