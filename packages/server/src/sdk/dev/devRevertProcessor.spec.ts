@@ -27,7 +27,7 @@ describe("devRevertProcessor", () => {
 
     const processor = devRevertProcessor()
     const testData: DevRevertQueueData = {
-      appId: config.getDevWorkspaceId(),
+      workspaceId: config.getDevWorkspaceId(),
       userId: generator.guid(),
     }
 
@@ -48,7 +48,7 @@ describe("devRevertProcessor", () => {
 
       const processor = devRevertProcessor()
       const testData: DevRevertQueueData = {
-        appId: config.getDevWorkspaceId(),
+        workspaceId: config.getDevWorkspaceId(),
         userId: generator.guid(),
       }
 
@@ -79,7 +79,7 @@ describe("devRevertProcessor", () => {
       const processor = devRevertProcessor()
 
       const testData: DevRevertQueueData = {
-        appId: config.getDevWorkspaceId(),
+        workspaceId: config.getDevWorkspaceId(),
         userId: generator.guid(),
       }
 

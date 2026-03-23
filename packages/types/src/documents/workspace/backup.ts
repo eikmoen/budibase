@@ -55,7 +55,7 @@ export type BackupFetchOpts = {
 }
 
 export interface WorkspaceBackupQueueData {
-  appId: string
+  workspaceId: string
   docId: string
   docRev: string
   export?: {
@@ -71,6 +71,6 @@ export interface WorkspaceBackupQueueData {
 }
 
 export interface DevRevertQueueData {
-  appId: string
+  workspaceId: string
   userId?: string
 }

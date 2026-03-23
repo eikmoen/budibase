@@ -175,7 +175,7 @@ async function triggerAppBackup(
   await getBackupQueue().add({
     docId: backup.id,
     docRev: backup.rev,
-    appId,
+    workspaceId: appId,
     export: {
       trigger,
       ...opts,
@@ -218,7 +218,7 @@ async function triggerAppRestore(
     }
   }
   await getBackupQueue().add({
-    appId,
+    workspaceId: appId,
     docId: restore.id,
     docRev: restore.rev,
     import: {

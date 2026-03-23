@@ -86,7 +86,7 @@ export async function revert(ctx: Ctx<void, RevertWorkspaceResponse>) {
   const { appId } = ctx.params
 
   const result = await sdk.dev.revertDevChanges({
-    appId,
+    workspaceId: appId,
     userId: ctx.user?._id,
   })
 

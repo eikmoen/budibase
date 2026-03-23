@@ -23,15 +23,23 @@ export async function init(opts: BackupProcessingOpts) {
     const data = job.data as WorkspaceBackupQueueData
     try {
       if (data.export) {
-        console.log("Exporting app backup:", data.appId, data.export.trigger)
+        console.log(
+          "Exporting app backup:",
+          data.workspaceId,
+          data.export.trigger
+        )
         return exportProcessor(job, opts)
       } else if (data.import) {
-        console.log("Importing app backup:", data.appId, data.import.backupId)
+        console.log(
+          "Importing app backup:",
+          data.workspaceId,
+          data.import.backupId
+        )
         return importProcessor(job, opts)
       }
     } catch (err: any) {
       logging.logAlert(
-        `Failed to perform backup for app ID: ${data.appId}`,
+        `Failed to perform backup for app ID: ${data.workspaceId}`,
         err
       )
     }
@@ -283,7 +291,7 @@ async function runBackup(
 
 async function importProcessor(job: Job, opts: BackupProcessingOpts) {
   const data: WorkspaceBackupQueueData = job.data
-  const appId = data.appId,
+  const appId = data.workspaceId,
     backupId = data.import!.backupId,
     nameForBackup = data.import!.nameForBackup,
     createdBy = data.import!.createdBy
@@ -388,7 +396,7 @@ async function importProcessor(job: Job, opts: BackupProcessingOpts) {
 
 async function exportProcessor(job: Job, opts: BackupProcessingOpts) {
   const data: WorkspaceBackupQueueData = job.data
-  const appId = data.appId,
+  const appId = data.workspaceId,
     trigger = data.export!.trigger,
     name = data.export!.name
   const tenantId = tenancy.getTenantIDFromWorkspaceID(appId) as string

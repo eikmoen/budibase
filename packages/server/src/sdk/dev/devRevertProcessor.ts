@@ -28,7 +28,7 @@ class DevRevertProcessor extends queue.QueuedProcessor<DevRevertQueueData> {
   protected processFn = async (
     data: DevRevertQueueData
   ): Promise<{ message: string }> => {
-    return await context.doInWorkspaceContext(data.appId, () =>
+    return await context.doInWorkspaceContext(data.workspaceId, () =>
       this.revertApp(data)
     )
   }
@@ -36,7 +36,7 @@ class DevRevertProcessor extends queue.QueuedProcessor<DevRevertQueueData> {
   private async revertApp(
     data: DevRevertQueueData
   ): Promise<{ message: string }> {
-    const { appId } = data
+    const { workspaceId: appId } = data
     const productionAppId = dbCore.getProdWorkspaceID(appId)
 
     // App must have been deployed first
