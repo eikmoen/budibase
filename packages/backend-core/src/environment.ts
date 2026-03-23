@@ -206,7 +206,9 @@ const environment = {
   BACKUPS_BUCKET_NAME:
     process.env.BACKUPS_BUCKET_NAME || DefaultBucketName.BACKUPS,
   WORKSPACES_BUCKET_NAME:
-    process.env.APPS_BUCKET_NAME || DefaultBucketName.WORKSPACES,
+    process.env.WORKSPACES_BUCKET_NAME ||
+    process.env.APPS_BUCKET_NAME ||
+    DefaultBucketName.WORKSPACES,
   TEMPLATES_BUCKET_NAME:
     process.env.TEMPLATES_BUCKET_NAME || DefaultBucketName.TEMPLATES,
   GLOBAL_BUCKET_NAME:
