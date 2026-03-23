@@ -1,7 +1,7 @@
 import { structures } from "../../../../tests"
 import { testEnv } from "../../../../tests/extra"
 import * as context from "../../../context"
-import * as app from "../app"
+import * as workspace from "../workspace"
 
 describe("app", () => {
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe("app", () => {
 
   describe("clientLibraryUrl", () => {
     async function getClientUrl() {
-      return await app.clientLibraryUrl("app_123", "2.0.0")
+      return await workspace.clientLibraryUrl("app_123", "2.0.0")
     }
 
     describe("single tenant", () => {
@@ -88,7 +88,7 @@ describe("app", () => {
 
   describe("getAppFileUrl", () => {
     function getAppFileUrl() {
-      return app.getAppFileUrl("app_123/attachments/image.jpeg")
+      return workspace.getAppFileUrl("app_123/attachments/image.jpeg")
     }
 
     describe("single tenant", () => {

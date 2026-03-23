@@ -4,7 +4,7 @@ jest.mock("../../objectStore", () => ({
 }))
 
 import * as objectStore from "../../objectStore"
-import { clientLibraryPath } from "../app"
+import { clientLibraryPath } from "../workspace"
 
 const mockObjectExists = objectStore.objectExists as jest.MockedFunction<
   typeof objectStore.objectExists
