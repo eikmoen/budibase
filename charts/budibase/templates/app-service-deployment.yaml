@@ -117,7 +117,7 @@ spec:
           value: {{ .Values.services.objectStore.ignoreSelfSigned | quote }}
         - name: PLUGIN_BUCKET_NAME
           value: {{ .Values.services.objectStore.pluginBucketName | quote }}
-        - name: APPS_BUCKET_NAME
+        - name: WORKSPACES_BUCKET_NAME
           value: {{ .Values.services.objectStore.appsBucketName | quote }}
         - name: GLOBAL_BUCKET_NAME
           value: {{ .Values.services.objectStore.globalBucketName | quote }}
