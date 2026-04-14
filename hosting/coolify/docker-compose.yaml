@@ -95,6 +95,22 @@ services:
       - worker-service
       - app-service
       - couchdb-service
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=coolify
+      - traefik.http.middlewares.budibase-gzip.compress=true
+      - traefik.http.middlewares.budibase-redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.routers.budibase-http.entrypoints=http
+      - traefik.http.routers.budibase-http.middlewares=budibase-redirect-to-https
+      - traefik.http.routers.budibase-http.rule=Host(`budibase.en1.dk`) && PathPrefix(`/`)
+      - traefik.http.routers.budibase-http.service=budibase
+      - traefik.http.routers.budibase-https.entrypoints=https
+      - traefik.http.routers.budibase-https.middlewares=budibase-gzip
+      - traefik.http.routers.budibase-https.rule=Host(`budibase.en1.dk`) && PathPrefix(`/`)
+      - traefik.http.routers.budibase-https.service=budibase
+      - traefik.http.routers.budibase-https.tls.certresolver=letsencrypt
+      - traefik.http.routers.budibase-https.tls=true
+      - traefik.http.services.budibase.loadbalancer.server.port=80
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:10000/"]
       interval: 15s
