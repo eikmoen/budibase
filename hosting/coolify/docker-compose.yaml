@@ -97,7 +97,6 @@ services:
       - couchdb-service
     labels:
       - traefik.enable=true
-      - traefik.docker.network=coolify
       - traefik.http.middlewares.budibase-gzip.compress=true
       - traefik.http.middlewares.budibase-redirect-to-https.redirectscheme.scheme=https
       - traefik.http.routers.budibase-http.entrypoints=http
