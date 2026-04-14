@@ -1,0 +1,20 @@
+{
+  "name": "budibase",
+  "project": "ITU",
+  "environment": "production",
+  "server": "Master",
+  "sourceType": "public",
+  "repo": "REPLACE_WITH_YOUR_GITHUB_USERNAME/budibase",
+  "branch": "master",
+  "buildPack": "dockercompose",
+  "port": 10000,
+  "domain": "https://budibase.en1.dk",
+  "healthCheckPath": "/",
+  "description": "Budibase fork for ITU",
+  "envFile": "hosting/.env.coolify.production",
+  "runtimeOnlyEnv": true,
+  "verify": {
+    "url": "https://budibase.en1.dk",
+    "expectStatus": 200
+  }
+}

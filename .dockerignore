@@ -6,6 +6,7 @@ packages/server/scripts/
 !packages/server/scripts/integrations/oracle
 !nx.json
 !/hosting/single/
+!/hosting/coolify/
 !/hosting/litellm_config.yaml
 !/hosting/letsencrypt /
 
@@ -13,3 +14,4 @@ packages/server/scripts/
 !yarn.lock
 !lerna.json
 !.yarnrc
+!tsconfig.build.json
