@@ -122,5 +122,6 @@ budibase-datasource
 .opencode
 .env
 docker-compose.yaml
+!hosting/coolify/docker-compose.yaml
 hosting/.env.coolify.production
 hosting/.env.*.production
