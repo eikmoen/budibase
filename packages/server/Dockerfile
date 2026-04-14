@@ -36,7 +36,7 @@ RUN apk add --no-cache \
     coreutils \
     tzdata
 
-RUN yarn global add pm2
+RUN npm install --global pm2
 
 WORKDIR /
 
